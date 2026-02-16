@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'mood/mood.dart' show MoodPage;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
 
@@ -140,15 +142,6 @@ class _MainPageState extends State<MainPage> {
                           ),
                         ),
                       ),
-                      // SvgPicture.asset(
-                      //   icon,
-                      //   width: 24,
-                      //   height: 24,
-                      //   colorFilter: ColorFilter.mode(
-                      //     color,
-                      //     BlendMode.srcIn
-                      //   ),
-                      // ),
                       Text (
                         _navName[i],
                         style: TextStyle(
@@ -157,9 +150,6 @@ class _MainPageState extends State<MainPage> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      // SizedBox(
-                      //   height: 18,
-                      // ),
                     ] 
                   ),
                 ),
@@ -193,130 +183,6 @@ class CenterPage extends StatelessWidget {
         style: const TextStyle(
           fontSize: 36,
           fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-}
-
-class MoodPage extends StatelessWidget {
-  const MoodPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // // ===== JAR IMAGE ===== (error)
-        // Image.asset(
-        //   "assets/images/jar.png",
-        //   height: 120,
-        // ),
-        // ===== BUTTONS =====
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              // Image.asset(
-              //   "assets/image/jar.png",
-              //   height: 240,
-              // ),
-              ElevatedButton(
-                onPressed: () {
-                  _openOverlay(context);
-                },
-                // onPressed: () {},
-                child: const Text("Add Mood +"),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text("History"),
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(
-          height: MediaQuery.of(context).padding.bottom + 108,
-        ),
-      ],
-    );
-  }
-  // void _openOverlay(BuildContext context) {
-  //   if (!context.mounted) return;
-
-  //   Navigator.of(context, rootNavigator: true).push(
-  //     PageRouteBuilder(
-  //       opaque: false,
-  //       barrierColor: Colors.black.withOpacity(0.4),
-  //       pageBuilder: (_, __, ___) => const MoodOverlayPage(),
-  //     ),
-  //   );
-  // }
-  void _openOverlay(BuildContext context) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        opaque: false, // 👈 allows transparency
-        barrierColor: Colors.black.withAlpha(120),
-        pageBuilder: (_, _, _) => const MoodOverlayPage(),
-        transitionsBuilder: (_, animation, _, child) {
-          final offsetTween = Tween(
-            begin: const Offset(1, 0),
-            end: Offset.zero,
-          ).chain(CurveTween(curve: Curves.easeOut));
-
-          return SlideTransition(
-            position: animation.drive(offsetTween),
-            child: child,
-          );
-        },
-      ),
-    );
-  }
-}
-
-class MoodOverlayPage extends StatelessWidget {
-  const MoodOverlayPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ===== HEADER =====
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Text(
-                    "What's going on inside?",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const Divider(),
-
-            // ===== CONTENT =====
-            Expanded(
-              child: Center(
-                child: Text(
-                  "Mood input goes here",
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

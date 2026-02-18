@@ -20,6 +20,7 @@ class MoodPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
+              const SizedBox(height: 120),
               // Image.asset(
               //   "assets/image/jar.png",
               //   height: 240,

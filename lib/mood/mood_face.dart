@@ -368,18 +368,15 @@ class MoodFace extends StatelessWidget {
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.red),
+                // border: Border.all(color: Colors.red),
               ),
             ),
           ),
-
-          /// 👇 FACE AREA (this is the real origin)
           SizedBox(
             width: totalWidth,
             height: totalHeight,
             child: Stack(
               children: [
-                /// 👁 EYES
                 Positioned(
                   top: data.extraSize,
                   left: data.extraSize,
@@ -397,8 +394,6 @@ class MoodFace extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                /// 👄 MOUTH
                 Positioned(
                   top: data.eyeRadius * 2 + data.extraSize,
                   left: data.extraSize,
@@ -416,8 +411,6 @@ class MoodFace extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                /// 💧 TEAR (position relative to eye)
                 Positioned(
                   left: 0,
                   bottom: 0,
@@ -461,7 +454,7 @@ class EyesPainter extends CustomPainter {
   final double radius;
   final double spacing;
   final Offset center;
-  final double heart; // 0 = circle, 1 = heart
+  final double heart;
   final double open;
 
   const EyesPainter({
@@ -476,7 +469,7 @@ class EyesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final k = 1.313 * radius; // circle cubic constant
+    final k = 1.313 * radius;
 
     final fillPaint = Paint()
       ..color = Colors.black

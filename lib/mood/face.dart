@@ -1,351 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-// import 'package:flutter_svg/flutter_svg.dart';
 
-class MoodFacePage extends StatefulWidget {
-  const MoodFacePage({super.key});
+import '../data/data.dart';
 
-  @override
-  State<MoodFacePage> createState() => _MoodFacePageState();
-}
-
-class MoodFaceData {
-  final String label;
-
-  final Color bgColor;
-
-  // Eyes
-  final double eyeRadius;
-  final double eyeSpacing;
-  final double eyeOpen;
-  final double eyeHeart;
-
-  final double mouthHeight;
-  final double mouthSmile;
-  final double mouthClose;
-  final double mouthRotation;
-
-  final double extraSize; // tears, stress mark, etc.
-  final double tear;
-  final double stress;
-
-  const MoodFaceData({
-    required this.label,
-    required this.bgColor,
-    required this.mouthSmile,
-    this.eyeRadius = 40,
-    this.eyeSpacing = 15,
-    this.eyeOpen = 1,
-    this.eyeHeart = 0,
-    this.mouthHeight = 40,
-    this.mouthClose = 1,
-    this.mouthRotation = 0,
-    this.extraSize = 40,
-    this.tear = 0,
-    this.stress = 0,
-  });
-
-  static MoodFaceData lerp(MoodFaceData a, MoodFaceData b, double t) {
-    double lerpDouble(double x, double y) => x + (y - x) * t;
-
-    return MoodFaceData(
-      label: t < 0.5 ? a.label : b.label,
-      bgColor: Color.lerp(a.bgColor, b.bgColor, t)!,
-
-      eyeRadius: lerpDouble(a.eyeRadius, b.eyeRadius),
-      eyeSpacing: lerpDouble(a.eyeSpacing, b.eyeSpacing),
-      eyeOpen: lerpDouble(a.eyeOpen, b.eyeOpen),
-      eyeHeart: lerpDouble(a.eyeHeart, b.eyeHeart),
-
-      mouthHeight: lerpDouble(a.mouthHeight, b.mouthHeight),
-      mouthSmile: lerpDouble(a.mouthSmile, b.mouthSmile),
-      mouthClose: lerpDouble(a.mouthClose, b.mouthClose),
-      mouthRotation: lerpDouble(a.mouthRotation, b.mouthRotation),
-
-      extraSize: lerpDouble(a.extraSize, b.extraSize),
-      tear: lerpDouble(a.tear, b.tear),
-      stress: lerpDouble(a.stress, b.stress),
-    );
-  }
-}
-
-const List<MoodFaceData> moodLibrary = [
-  MoodFaceData(
-    label: "Sad",
-    bgColor: Color(0xFF5C6BC0),
-    mouthSmile: -1,
-    mouthRotation: -0.4,
-  ),
-  MoodFaceData(
-    label: "Anxious",
-    bgColor: Color(0xFF7E57C2),
-    mouthSmile: -1,
-    mouthClose: 0,
-    tear: 1,
-  ),
-  MoodFaceData(
-    label: "Stressed",
-    bgColor: Color(0xFFEF5350),
-    mouthSmile: -0.7,
-    stress: 1,
-  ),
-  MoodFaceData(
-    label: "Calm",
-    bgColor: Color(0xFFB4E7FB),
-    eyeOpen: -1,
-    mouthSmile: 0.7,
-  ),
-  MoodFaceData(
-    label: "Happy",
-    bgColor: Color(0xFFFFE082),
-    mouthSmile: 1,
-    mouthClose: 0,
-  ),
-  MoodFaceData(
-    label: "Loved",
-    bgColor: Color(0xFFFFB2B1),
-    eyeHeart: 1,
-    mouthSmile: 1,
-    mouthClose: 0,
-  ),
-];
-
-class _MoodFacePageState extends State<MoodFacePage> with SingleTickerProviderStateMixin {
-  double _index = (moodLibrary.length / 2).floorToDouble(); // middle of the moodLibrary
-  double _targetIndex = 0;
-
-  static const double _step = 10;
-  int get divisions => moodLibrary.length - 1;
-  double get min => 0;
-  double get max => divisions * _step;
-
-  late AnimationController _motionController;
-  Animation<double>? _motionAnimation;
-
-  MoodFaceData _currentMood(double index) {
-    final int i0 = index.floor().clamp(0, moodLibrary.length - 1);
-    final int i1 = (i0 + 1).clamp(0, moodLibrary.length - 1);
-
-    final double t = index - i0;
-
-    return MoodFaceData.lerp(
-      moodLibrary[i0],
-      moodLibrary[i1],
-      t,
-    );
-  }
-
-  void _animateTo(double newTarget, {Duration? duration, Curve? curve}) {
-    _targetIndex = newTarget;
-
-    _motionAnimation = Tween<double>(
-      begin: _index,
-      end: _targetIndex,
-    ).animate(
-      CurvedAnimation(
-        parent: _motionController,
-        curve: curve ?? Curves.easeOut,
-      ),
-    );
-
-    _motionController.duration = duration ?? const Duration(milliseconds: 140);
-
-    _motionController
-      ..stop()
-      ..reset()
-      ..forward();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-     _targetIndex = _index;
-
-    _motionController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-
-    _motionController.addListener(() {
-      setState(() {
-        _index = _motionAnimation!.value;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _motionController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = _currentMood(_index);
-    return Scaffold(
-      backgroundColor: mood.bgColor,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          MoodFace(
-            data: mood,
-          ),
-
-          const SizedBox(height: 40),
-
-          // SLIDER
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 48),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(
-                      painter: _TickPainter(
-                        tickCount: moodLibrary.length,
-                      ),
-                    ),
-                  ),
-                ),
-                SliderTheme(
-                  data: 
-                  SliderTheme.of(context).copyWith(
-                    trackShape: _TrackShape(),
-                    // tickMarkShape: const _TickMarkShape(),
-                
-                    activeTrackColor: Colors.transparent,
-                    inactiveTrackColor: Colors.transparent,
-                
-                    overlayColor: Colors.transparent,
-                    thumbColor: Colors.black,
-                
-                    showValueIndicator: ShowValueIndicator.never,
-                  ),
-                  child: Slider(
-                    value: _index * _step,
-                    min: min,
-                    max: max,
-                    // ← no divisions (keeps it smooth)
-                    // label: _index.toStringAsFixed(1),
-                    onChanged: (value) {
-                      setState(() {
-                        _targetIndex = (value / _step);
-                        _index = _targetIndex;
-                      });
-                      // _animateTo(
-                      //   value / _step,
-                      //   duration: const Duration(milliseconds: 20), // fast follow
-                      //   curve: Curves.linear, // tracks finger closely
-                      // );
-                    },
-                    onChangeEnd: (value) {
-                      final snapped = (value / _step).roundToDouble();
-
-                      _animateTo(
-                        snapped,
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeOutCubic, // emotional easing
-                      );
-                    },
-                  ),
-                ),
-              ]
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TickPainter extends CustomPainter {
-  final int tickCount;
-
-  _TickPainter({required this.tickCount});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey.shade700
-      ..style = PaintingStyle.fill;
-
-    final spacing = size.width / (tickCount - 1);
-
-    for (int i = 0; i < tickCount; i++) {
-      final dx = spacing * i;
-      final center = Offset(dx, size.height / 2);
-
-      canvas.drawCircle(center, 8, paint); // your grey dots
-    }
-  }
-
-  @override
-  bool shouldRepaint(_) => false;
-}
-
-class _TrackShape extends SliderTrackShape {
-  @override
-  Rect getPreferredRect({
-    required RenderBox parentBox,
-    Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
-    bool isEnabled = false,
-    bool isDiscrete = false,
-  }) {
-    final double trackHeight = 0; // we control height manually
-    final double trackLeft = offset.dx;
-    final double trackTop =
-        offset.dy + (parentBox.size.height / 2) - trackHeight / 2;
-    final double trackWidth = parentBox.size.width;
-
-    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
-  }
-
-  @override
-  void paint(
-    PaintingContext context,
-    Offset offset, {
-    required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
-    required Animation<double> enableAnimation,
-    required Offset thumbCenter,
-    Offset? secondaryOffset,
-    bool isEnabled = false,
-    bool isDiscrete = false,
-    required TextDirection textDirection,
-    double additionalActiveTrackHeight = 0,
-  }) {
-    final Canvas canvas = context.canvas;
-
-    final rect = getPreferredRect(
-      parentBox: parentBox,
-      offset: offset,
-      sliderTheme: sliderTheme,
-      isEnabled: isEnabled,
-      isDiscrete: isDiscrete,
-    );
-
-    final y = rect.center.dy;
-
-    final paint = Paint()
-      ..color = Colors.grey.shade700
-      ..strokeWidth = 6
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawLine(
-      Offset(rect.left, y),
-      Offset(rect.right, y),
-      paint,
-    );
-  }
-}
 
 class MoodFace extends StatelessWidget {
   final MoodFaceData data;
+  final double scalePercentage;
 
-  const MoodFace({super.key, required this.data});
+  const MoodFace({super.key, required this.data, required this.scalePercentage});
 
   @override
   Widget build(BuildContext context) {
@@ -363,15 +26,6 @@ class MoodFace extends StatelessWidget {
       height: totalHeight,
       child: Stack(
         children: [
-
-          /// 👇 Debug border (whole widget)
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                // border: Border.all(color: Colors.red),
-              ),
-            ),
-          ),
           SizedBox(
             width: totalWidth,
             height: totalHeight,
@@ -391,6 +45,7 @@ class MoodFace extends StatelessWidget {
                       ),
                       heart: data.eyeHeart,
                       open: data.eyeOpen,
+                      scalePercentage: scalePercentage,
                     ),
                   ),
                 ),
@@ -408,6 +63,7 @@ class MoodFace extends StatelessWidget {
                       smile: data.mouthSmile,
                       close: data.mouthClose,
                       rotation: data.mouthRotation,
+                      scalePercentage: scalePercentage,
                     ),
                   ),
                 ),
@@ -423,6 +79,7 @@ class MoodFace extends StatelessWidget {
                       ),
                       tear: data.tear,
                       size: data.extraSize,
+                      scalePercentage: scalePercentage,
                     ),
                   ),
                 ),
@@ -438,6 +95,7 @@ class MoodFace extends StatelessWidget {
                       ),
                       stress: data.stress,
                       size: data.extraSize * 1.2,
+                      scalePercentage: scalePercentage,
                     ),
                   ),
                 ),
@@ -456,6 +114,7 @@ class EyesPainter extends CustomPainter {
   final Offset center;
   final double heart;
   final double open;
+  final double scalePercentage;
 
   const EyesPainter({
     required this.radius,
@@ -463,6 +122,7 @@ class EyesPainter extends CustomPainter {
     required this.center,
     required this.heart,
     required this.open,
+    required this.scalePercentage,
   });
 
   Offset L(Offset a, Offset b, double t) => Offset.lerp(a, b, t)!;
@@ -478,7 +138,7 @@ class EyesPainter extends CustomPainter {
     final strokePaint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 12
+      ..strokeWidth = 12 * scalePercentage
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
@@ -570,6 +230,7 @@ class MouthPainter extends CustomPainter {
   final double smile;
   final double close;
   final double rotation;
+  final double scalePercentage;
 
   const MouthPainter({
     required this.radius,
@@ -577,6 +238,7 @@ class MouthPainter extends CustomPainter {
     required this.smile,
     required this.close,
     required this.rotation,
+    required this.scalePercentage,
   });
   
   Offset L(Offset a, Offset b, double t) => Offset.lerp(a, b, t)!;
@@ -595,15 +257,14 @@ class MouthPainter extends CustomPainter {
       ..color = Colors.black
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round
-      ..strokeWidth = 10;
+      ..strokeJoin = StrokeJoin.round;
     
     final strokePaint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..strokeWidth = 12;
+      ..strokeWidth = 12 * scalePercentage;
     
     final start = Offset(center.dx - radius, center.dy - radius * smile * 0.3);
     
@@ -645,11 +306,13 @@ class TearPainter extends CustomPainter {
   final Offset center;
   final double size;
   final double tear;
+  final double scalePercentage;
 
   const TearPainter({
     required this.center,
     required this.tear,
     required this.size,
+    required this.scalePercentage,
   });
 
   double lerpDouble(double x, double y, double t) => x + (y - x) * t;
@@ -657,7 +320,7 @@ class TearPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size canvasSize) {
     if (tear <= 0) return;
-    final double scale = lerpDouble(0.2, 1.0, tear);
+    final double scale = lerpDouble(0.2, 1.0, tear) * scalePercentage;
     final double opacity = lerpDouble(0.0, 1, tear);
     final double strokeW = lerpDouble(1.0, 12, tear);
 
@@ -689,8 +352,8 @@ class TearPainter extends CustomPainter {
   }
 
   Path _buildTearPath(double s) {
-    final h = s * 0.5;
-    final w = s * 0.4;
+    final h = s * 0.35;
+    final w = s * 0.25;
 
     return Path()
       ..moveTo(0, -h)
@@ -718,11 +381,13 @@ class StressPainter extends CustomPainter {
   final Offset center;
   final double size;
   final double stress;
+  final double scalePercentage;
 
   const StressPainter({
     required this.center,
     required this.stress,
     required this.size,
+    required this.scalePercentage,
   });
 
   double lerpDouble(double x, double y, double t) => x + (y - x) * t;
@@ -732,13 +397,13 @@ class StressPainter extends CustomPainter {
     if (stress <= 0) return;
 
     // ---- Animate scale ----
-    final double scale = lerpDouble(0.2, 1.0, stress);
+    final double scale = lerpDouble(0.2, 1.0, stress) * scalePercentage;
 
     // ---- Animate opacity ----
     final double opacity = lerpDouble(0.0, 1, stress);
 
     // ---- Animate stroke thickness ----
-    final double strokeW = lerpDouble(1.0, 8, stress);
+    final double strokeW = lerpDouble(1.0, 8, stress) * scalePercentage;
 
     final strokePaint = Paint()
       ..color = Colors.black.withAlpha((255 * opacity).toInt())
@@ -767,7 +432,7 @@ class StressPainter extends CustomPainter {
     // SVG original size
 
     // scale factor so caller controls final size
-    final double scale = s / size;
+    final double scale = s / size * scalePercentage;
 
     Offset map(double x, double y) {
       // center the SVG around (0,0) because canvas is already translated

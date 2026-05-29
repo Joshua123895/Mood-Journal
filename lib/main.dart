@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'mood/mood.dart' show MoodPage;
-import 'game.dart' show PasswordGamePage;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -44,9 +43,8 @@ class _MainPageState extends State<MainPage> {
     "assets/icons/sun.svg",
     "assets/icons/journal.svg",
     "assets/icons/jar.svg",
-    "assets/icons/game.svg",
   ];
-  final List<String> _navName = ["Home", "Journal", "Mood", "Game"];
+  final List<String> _navName = ["Home", "Journal", "Mood"];
   late final PageController _pageController;
 
   @override
@@ -86,7 +84,6 @@ class _MainPageState extends State<MainPage> {
           CenterPage(title: 'Home', color: Colors.white),
           CenterPage(title: 'Search', color: Colors.pinkAccent),
           MoodPage(),
-          PasswordGamePage(),
         ],
       ),
 

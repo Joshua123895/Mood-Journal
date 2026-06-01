@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'mood/mood.dart' show MoodPage;
+import 'home/home.dart' show HomePage;
+import 'journal/journal.dart' show JournalPage;
+import 'services/mood_service_instance.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -12,6 +15,8 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  await moodService.init();
 
   runApp(const MyApp());
 }
@@ -81,8 +86,8 @@ class _MainPageState extends State<MainPage> {
         },
 
         children: [
-          CenterPage(title: 'Home', color: Colors.white),
-          CenterPage(title: 'Search', color: Colors.pinkAccent),
+          HomePage(),
+          JournalPage(),
           MoodPage(),
         ],
       ),

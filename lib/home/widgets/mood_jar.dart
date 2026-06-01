@@ -2,29 +2,37 @@ import 'package:flutter/material.dart';
 
 class MoodJar extends StatelessWidget {
   final double fillPercentage;
+  final int moodScore;
+  final double jarWidth = 150;
+  final double jarHeight = 200;
+  final double capWidth = 100;
+  final double capHeight = 10;
+  final double borderWidth = 4;
+  final double borderRadius = 36;
 
   const MoodJar({
     super.key,
-    this.fillPercentage = 0.6,
+    this.fillPercentage = 0.7,
+    this.moodScore = 80,
   });
 
   @override
   Widget build(BuildContext context) {
+    Color textColor = fillPercentage > 0.6 ? Colors.white : Colors.black;
     return SizedBox(
-      width: 140,
-      height: 160,
+      width: jarWidth,
+      height: jarHeight,
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-
           // glass
           Container(
-            width: 120,
-            height: 150,
+            width: jarWidth,
+            height: jarHeight - capHeight,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
+              borderRadius: BorderRadius.circular(40),
               border: Border.all(
-                width: 4,
+                width: borderWidth,
                 color: Colors.black26,
               ),
             ),
@@ -32,67 +40,99 @@ class MoodJar extends StatelessWidget {
 
           // liquid
           Positioned(
-            bottom: 0,
-            child: Container(
-              width: 112,
-              height: 150 * fillPercentage,
-              decoration: BoxDecoration(
-                color: Colors.orange.shade200,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(28),
-                  bottomRight: Radius.circular(28),
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
+            bottom: borderWidth,
+            child: ClipPath(
+              clipper: JarClipper(borderRadius),
+              child: Container(
+                width: jarWidth - 2 * borderWidth,
+                height: jarHeight - capHeight - 2 * borderWidth,
+
+                alignment: Alignment.bottomCenter,
+
+                child: FractionallySizedBox(
+                  alignment: Alignment.bottomCenter,
+                  heightFactor: fillPercentage.clamp(0.05, 1.0),
+                  child: Container(
+                    width: double.infinity,
+                    // decoration: BoxDecoration(
+                    //   gradient: LinearGradient(
+                    //     begin: Alignment.topCenter,
+                    //     end: Alignment.bottomCenter,
+                    //     colors: [
+                    //       Colors.orange.shade300,
+                    //       Colors.orange.shade600,
+                    //     ],
+                    //   ),
+                    // ),
+                    color: Colors.blue.shade400.withValues(alpha: 0.3),
+                  ),
                 ),
               ),
             ),
           ),
 
-          // face
+          // cap
           Positioned(
-            top: 55,
-            child: Row(
+            top: 0,
+            child: Container(
+              width: capWidth,
+              height: capHeight,
+              decoration: BoxDecoration(
+                color: Colors.brown.shade300,
+                borderRadius: BorderRadius.circular(borderRadius),
+              ),
+            ),
+          ),
+
+          // score text centered
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
+                Text(
+                  "$moodScore",
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
                   ),
                 ),
-
-                SizedBox(width: 24),
-
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
+                Text(
+                  "Mood Score",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: textColor,
                   ),
                 ),
               ],
-            ),
-          ),
-
-          Positioned(
-            top: 80,
-            child: Container(
-              width: 24,
-              height: 12,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    width: 2,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+class JarClipper extends CustomClipper<Path> {
+  final double borderRadius;
+
+  JarClipper(this.borderRadius);
+
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+
+    path.addRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Radius.circular(borderRadius),
+      ),
+    );
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }

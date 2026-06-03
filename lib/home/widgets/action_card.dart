@@ -6,6 +6,7 @@ class ActionCard extends StatelessWidget {
   final String desc;
 
   const ActionCard({
+    super.key, 
     required this.color,
     required this.title,
     required this.desc,
@@ -20,10 +21,11 @@ class ActionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
+            // textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -33,6 +35,7 @@ class ActionCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             desc,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 13,
               color: Colors.white70,

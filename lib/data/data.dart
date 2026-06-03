@@ -13,6 +13,7 @@ class MoodFaceData {
   final double eyeSpacing;
   final double eyeOpen;
   final double eyeHeart;
+  final double eyeRotate;
 
   final double mouthHeight;
   final double mouthSmile;
@@ -31,6 +32,7 @@ class MoodFaceData {
     this.eyeSpacing = 15,
     this.eyeOpen = 1,
     this.eyeHeart = 0,
+    this.eyeRotate = 0,
     this.mouthHeight = 40,
     this.mouthClose = 1,
     this.mouthRotation = 0,
@@ -50,6 +52,7 @@ class MoodFaceData {
       eyeSpacing: lerpDouble(a.eyeSpacing, b.eyeSpacing),
       eyeOpen: lerpDouble(a.eyeOpen, b.eyeOpen),
       eyeHeart: lerpDouble(a.eyeHeart, b.eyeHeart),
+      eyeRotate: lerpDouble(a.eyeRotate, b.eyeRotate),
 
       mouthHeight: lerpDouble(a.mouthHeight, b.mouthHeight),
       mouthSmile: lerpDouble(a.mouthSmile, b.mouthSmile),
@@ -71,6 +74,12 @@ const List<MoodFaceData> moodLibrary = [
     mouthRotation: -0.4,
   ),
   MoodFaceData(
+    label: "Calm",
+    bgColor: Color(0xFFCDEEE3),
+    eyeOpen: -1,
+    mouthSmile: 0.7,
+  ),
+  MoodFaceData(
     label: "Anxious",
     bgColor: Color(0xFFD6CCE8),
     mouthSmile: -1,
@@ -84,16 +93,11 @@ const List<MoodFaceData> moodLibrary = [
     stress: 1,
   ),
   MoodFaceData(
-    label: "Calm",
-    bgColor: Color(0xFFCDEEE3),
-    eyeOpen: -1,
-    mouthSmile: 0.7,
-  ),
-  MoodFaceData(
     label: "Happy",
     bgColor: Color(0xFFFFF1B8),
     mouthSmile: 1,
     mouthClose: 0,
+    eyeRotate: 1,
   ),
   MoodFaceData(
     label: "Loved",
@@ -101,6 +105,7 @@ const List<MoodFaceData> moodLibrary = [
     eyeHeart: 1,
     mouthSmile: 1,
     mouthClose: 0,
+    eyeRotate: 1,
   ),
 ];
 

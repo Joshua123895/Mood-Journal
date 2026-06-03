@@ -6,18 +6,16 @@ import '../data/data.dart';
 
 class MoodFace extends StatelessWidget {
   final MoodFaceData data;
-  final double scalePercentage;
 
-  const MoodFace({super.key, required this.data, required this.scalePercentage});
+  const MoodFace({
+    super.key,
+    required this.data, 
+  });
 
   @override
   Widget build(BuildContext context) {
-    final faceWidth  =
-        data.eyeRadius * 4 + data.eyeSpacing * 2;
-
-    final faceHeight =
-        data.eyeRadius * 2 + data.mouthHeight;
-
+    final faceWidth  = data.eyeRadius * 4 + data.eyeSpacing * 2;
+    final faceHeight = data.eyeRadius * 2 + data.mouthHeight;
     final totalWidth  = faceWidth + data.extraSize * 2;
     final totalHeight = faceHeight + data.extraSize;
 
@@ -36,7 +34,7 @@ class MoodFace extends StatelessWidget {
                   left: data.extraSize,
                   child: CustomPaint(
                     size: Size(faceWidth, data.eyeRadius * 2),
-                    painter: EyesPainter(
+                      painter: EyesPainter(
                       radius: data.eyeRadius,
                       spacing: data.eyeSpacing,
                       center: Offset(
@@ -45,7 +43,8 @@ class MoodFace extends StatelessWidget {
                       ),
                       heart: data.eyeHeart,
                       open: data.eyeOpen,
-                      scalePercentage: scalePercentage,
+                      rotate: data.eyeRotate,
+                      scalePercentage: 1,
                     ),
                   ),
                 ),
@@ -63,7 +62,7 @@ class MoodFace extends StatelessWidget {
                       smile: data.mouthSmile,
                       close: data.mouthClose,
                       rotation: data.mouthRotation,
-                      scalePercentage: scalePercentage,
+                      scalePercentage: 1,
                     ),
                   ),
                 ),
@@ -79,7 +78,7 @@ class MoodFace extends StatelessWidget {
                       ),
                       tear: data.tear,
                       size: data.extraSize,
-                      scalePercentage: scalePercentage,
+                      scalePercentage: 1,
                     ),
                   ),
                 ),
@@ -95,7 +94,7 @@ class MoodFace extends StatelessWidget {
                       ),
                       stress: data.stress,
                       size: data.extraSize * 1.2,
-                      scalePercentage: scalePercentage,
+                      scalePercentage: 1,
                     ),
                   ),
                 ),
@@ -114,6 +113,7 @@ class EyesPainter extends CustomPainter {
   final Offset center;
   final double heart;
   final double open;
+  final double rotate;
   final double scalePercentage;
 
   const EyesPainter({
@@ -122,6 +122,7 @@ class EyesPainter extends CustomPainter {
     required this.center,
     required this.heart,
     required this.open,
+    required this.rotate,
     required this.scalePercentage,
   });
 
@@ -163,8 +164,7 @@ class EyesPainter extends CustomPainter {
     // Move to this eye's pivot
     canvas.translate(eyeCenter.dx, eyeCenter.dy);
 
-    // Rotate ONLY the eye shape (not layout)
-    canvas.rotate(heart * pi / 2);
+    canvas.rotate(rotate * pi / 2);
 
     final path = _buildEyePath(k);
 
@@ -220,6 +220,7 @@ class EyesPainter extends CustomPainter {
   bool shouldRepaint(covariant EyesPainter oldDelegate) =>
       oldDelegate.heart != heart ||
       oldDelegate.open != open ||
+      oldDelegate.rotate != rotate ||
       oldDelegate.radius != radius ||
       oldDelegate.spacing != spacing;
 }

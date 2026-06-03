@@ -1,10 +1,19 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-import 'widgets/mood_jar.dart';
+import 'widgets/mood_jar_section.dart';
 import 'widgets/action_card.dart';
+import 'widgets/stats_card.dart';
+import 'widgets/greeting_header.dart';
+import 'widgets/section_header.dart';
+import 'widgets/streak_card.dart';
+import 'widgets/journal_card.dart';
+import 'widgets/mood_count_grid.dart';
 import '../data/data.dart';
 import '../data/entry.dart';
 import '../services/mood_service_instance.dart';
+import '../widgets/shared_widgets.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,11 +24,28 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<MoodEntry> _moods = [];
+  final Random _random = Random();
+  late final List<String> _journalTitles;
+  late final List<String> _journalEmojis;
+  final List<Color> _gridColors = const [
+    Color(0xFFB8DE70),
+    Color(0xFF71A4FF),
+    Color(0xFFFFB347),
+    Color(0xFFFF6B6B),
+    Color(0xFFA78BFA),
+    Color(0xFFF472B6),
+  ];
 
   @override
   void initState() {
     super.initState();
     _loadMoods();
+    _initRandomData();
+  }
+
+  void _initRandomData() {
+    _journalTitles = List.generate(3, (_) => _randomWords().join(' '));
+    _journalEmojis = List.generate(3, (_) => _randomEmoji());
   }
 
   Future<void> _loadMoods() async {
@@ -97,9 +123,44 @@ class _HomePageState extends State<HomePage> {
     return Colors.grey.shade200;
   }
 
-  String _dayAbbr(DateTime date) {
-    final weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    return weekdays[date.weekday - 1];
+  List<String> _randomWords() {
+    const words = [
+      'Sunny', 'Bright', 'Cloudy', 'Stormy', 'Peaceful', 'Quiet',
+      'Gentle', 'Wild', 'Calm', 'Restless', 'Hopeful', 'Joyful',
+      'Warm', 'Sweet', 'Fresh', 'Cozy', 'Breezy', 'Dreamy',
+      'Vibrant', 'Serene', 'Bold', 'Mellow', 'Lively', 'Tranquil',
+    ];
+    final shuffled = List<String>.from(words)..shuffle(_random);
+    return shuffled.take(3).toList();
+  }
+
+  String _relativeDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final entryDate = DateTime(date.year, date.month, date.day);
+    final diff = today.difference(entryDate).inDays;
+    if (diff == 0) return 'the day like today';
+    if (diff == 1) return 'yesterday';
+    return '$diff days ago';
+  }
+
+  String _randomEmoji() {
+    const emojis = ['😊', '🌟', '💪', '🎯', '✨', '🔥', '💫', '🌈', '🦋', '🌻'];
+    return emojis[_random.nextInt(emojis.length)];
+  }
+
+  Map<String, int> _moodCounts() {
+    final counts = <String, int>{};
+    for (final mood in moodLibrary) {
+      counts[mood.label] = 0;
+    }
+    for (final entry in _moods) {
+      if (entry.mood >= 0 && entry.mood < moodLibrary.length) {
+        counts[moodLibrary[entry.mood].label] =
+            (counts[moodLibrary[entry.mood].label] ?? 0) + 1;
+      }
+    }
+    return counts;
   }
 
   @override
@@ -107,6 +168,7 @@ class _HomePageState extends State<HomePage> {
     final score = _calculateScore();
     final weekMoods = _thisWeekMoods();
     final streak = _journalStreak();
+    final counts = _moodCounts();
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -114,47 +176,15 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 24),
-            Text(
-              "${_greeting()}, ${_userName()}",
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              "How are you feeling today?",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade500,
-              ),
+            GreetingHeader(
+              greeting: "${_greeting()}, ${_userName()}",
+              subtitle: "How are you feeling today?",
             ),
             const SizedBox(height: 32),
             Center(
-              child: Column(
-                children: [
-                  MoodJar(
-                    fillPercentage: score / 100,
-                    moodScore: score,
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "You are doing well today",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Keep protecting your peace",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                ],
+              child: MoodJarSection(
+                score: score,
+                fillPercentage: score / 100,
               ),
             ),
             const SizedBox(height: 32),
@@ -170,7 +200,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Expanded(
                   child: ActionCard(
-                    color: const Color(0xFFC8DE80),
+                    color: const Color(0xFFB8DE70),
                     title: "Rant",
                     desc: "Get something at\nyour chest",
                   ),
@@ -194,14 +224,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade300, width: 1),
-              ),
+            TransparentCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -214,88 +237,77 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: weekMoods.asMap().entries.map((e) {
-                      final entry = e.value;
-                      final date = DateTime(
-                        DateTime.now().year,
-                        DateTime.now().month,
-                        DateTime.now().day - (6 - e.key),
-                      );
-                      return Column(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: entry != null
-                                  ? _moodColor(entry.mood)
-                                  : Colors.grey.shade200,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            _dayAbbr(date),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      );
-                    }).toList(),
+                  WeekMoodRow(
+                    weekMoods: weekMoods,
+                    moodColor: _moodColor,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
+            StreakCard(streak: streak),
+            const SizedBox(height: 32),
+            SectionHeader(title: "Recent Journal"),
+            const SizedBox(height: 12),
+            ...List.generate(3, (i) {
+              final entry = i < _moods.length ? _moods[i] : null;
+              return JournalCard(
+                title: _journalTitles[i],
+                subtitle: entry != null
+                    ? _relativeDate(entry.date)
+                    : "No entry yet",
+                emoji: _journalEmojis[i],
+              );
+            }),
+            const SizedBox(height: 32),
+            const Text(
+              "Tips for you",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "Daily inspiration for a better you",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade500,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const StatsCard(),
+            const SizedBox(height: 32),
+            SectionHeader(title: "Your Moods"),
+            const SizedBox(height: 12),
+            MoodCountGrid(
+              counts: counts,
+              gridColors: _gridColors,
+            ),
+            const SizedBox(height: 32),
+            SectionHeader(title: "Reminders"),
+            const SizedBox(height: 12),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              height: 80,
               decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.grey.shade300, width: 1),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Journal Streak",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade700,
-                    ),
+            ),
+            const SizedBox(height: 12),
+            const DashedBorderBox(
+              child: Center(
+                child: Text(
+                  "+ Add reminder",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.purple,
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Text(
-                        "\u{1F525}",
-                        style: TextStyle(fontSize: 28),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        "$streak",
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Keep it going",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
             SizedBox(

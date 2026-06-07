@@ -25,33 +25,46 @@ class MoodInsightsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.3,
+    return Column(
       children: [
-        _InsightCard(
-          title: "Most Common",
-          value: mostCommon,
-          emoji: _moodEmojis[mostCommon] ?? "",
+        Row(
+          children: [
+            Expanded(
+              child: _InsightCard(
+                title: "Most Common",
+                value: mostCommon,
+                emoji: _moodEmojis[mostCommon] ?? "",
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _InsightCard(
+                title: "Least Common",
+                value: leastCommon,
+                emoji: _moodEmojis[leastCommon] ?? "",
+              ),
+            ),
+          ],
         ),
-        _InsightCard(
-          title: "Least Common",
-          value: leastCommon,
-          emoji: _moodEmojis[leastCommon] ?? "",
-        ),
-        _InsightCard(
-          title: "Best Day",
-          value: bestDay,
-          emoji: _moodEmojis[bestDay] ?? "",
-        ),
-        _InsightCard(
-          title: "Average Mood",
-          value: averageMood,
-          emoji: _moodEmojis[averageMood] ?? "",
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _InsightCard(
+                title: "Best Day",
+                value: bestDay,
+                emoji: _moodEmojis[bestDay] ?? "",
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _InsightCard(
+                title: "Average Mood",
+                value: averageMood,
+                emoji: _moodEmojis[averageMood] ?? "",
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -80,7 +93,7 @@ class _InsightCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
             title,

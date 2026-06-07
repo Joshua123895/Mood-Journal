@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../data/entry.dart';
+import '../data/data.dart';
+import '../mood/face.dart';
 
 class TransparentCard extends StatelessWidget {
   final Widget child;
@@ -60,6 +62,15 @@ class WeekMoodRow extends StatelessWidget {
                     : Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(10),
               ),
+              child: entry != null && entry.mood >= 0 && entry.mood < moodLibrary.length
+                  ? FittedBox(
+                      fit: BoxFit.contain,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: MoodFace(data: moodLibrary[entry.mood]),
+                      ),
+                    )
+                  : null,
             ),
             const SizedBox(height: 6),
             Text(
@@ -72,6 +83,81 @@ class WeekMoodRow extends StatelessWidget {
           ],
         );
       }).toList(),
+    );
+  }
+}
+
+class JournalCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final int moodIndex;
+
+  const JournalCard({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.moodIndex,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = moodIndex >= 0 && moodIndex < moodLibrary.length
+        ? moodLibrary[moodIndex]
+        : null;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade300, width: 1),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (mood != null)
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: mood.bgColor,
+                shape: BoxShape.circle,
+              ),
+              child: ClipOval(
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: MoodFace(data: mood),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

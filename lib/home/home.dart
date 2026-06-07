@@ -8,7 +8,6 @@ import 'widgets/stats_card.dart';
 import 'widgets/greeting_header.dart';
 import 'widgets/section_header.dart';
 import 'widgets/streak_card.dart';
-import 'widgets/journal_card.dart';
 import 'widgets/mood_count_grid.dart';
 import '../data/data.dart';
 import '../data/entry.dart';
@@ -26,7 +25,6 @@ class _HomePageState extends State<HomePage> {
   List<MoodEntry> _moods = [];
   final Random _random = Random();
   late final List<String> _journalTitles;
-  late final List<String> _journalEmojis;
   final List<Color> _gridColors = const [
     Color(0xFFB8DE70),
     Color(0xFF71A4FF),
@@ -45,7 +43,6 @@ class _HomePageState extends State<HomePage> {
 
   void _initRandomData() {
     _journalTitles = List.generate(3, (_) => _randomWords().join(' '));
-    _journalEmojis = List.generate(3, (_) => _randomEmoji());
   }
 
   Future<void> _loadMoods() async {
@@ -142,11 +139,6 @@ class _HomePageState extends State<HomePage> {
     if (diff == 0) return 'the day like today';
     if (diff == 1) return 'yesterday';
     return '$diff days ago';
-  }
-
-  String _randomEmoji() {
-    const emojis = ['😊', '🌟', '💪', '🎯', '✨', '🔥', '💫', '🌈', '🦋', '🌻'];
-    return emojis[_random.nextInt(emojis.length)];
   }
 
   Map<String, int> _moodCounts() {
@@ -256,7 +248,7 @@ class _HomePageState extends State<HomePage> {
                 subtitle: entry != null
                     ? _relativeDate(entry.date)
                     : "No entry yet",
-                emoji: _journalEmojis[i],
+                moodIndex: entry?.mood ?? 4,
               );
             }),
             const SizedBox(height: 32),

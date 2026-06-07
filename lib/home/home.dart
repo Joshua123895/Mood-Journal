@@ -13,6 +13,7 @@ import '../data/data.dart';
 import '../data/entry.dart';
 import '../services/mood_service_instance.dart';
 import '../widgets/shared_widgets.dart';
+import '../theme/app_constants.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,12 +27,12 @@ class _HomePageState extends State<HomePage> {
   final Random _random = Random();
   late final List<String> _journalTitles;
   final List<Color> _gridColors = const [
-    Color(0xFFB8DE70),
-    Color(0xFF71A4FF),
-    Color(0xFFFFB347),
-    Color(0xFFFF6B6B),
-    Color(0xFFA78BFA),
-    Color(0xFFF472B6),
+    AppColors.moodGrid1,
+    AppColors.moodGrid2,
+    AppColors.moodGrid3,
+    AppColors.moodGrid4,
+    AppColors.moodGrid5,
+    AppColors.moodGrid6,
   ];
 
   @override
@@ -164,7 +165,7 @@ class _HomePageState extends State<HomePage> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: Insets.pageHorizontal),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -172,50 +173,50 @@ class _HomePageState extends State<HomePage> {
               greeting: "${_greeting()}, ${_userName()}",
               subtitle: "How are you feeling today?",
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             Center(
               child: MoodJarSection(
                 score: score,
                 fillPercentage: score / 100,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             const Text(
               "Quick Actions",
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: FontSizes.lg,
+                fontWeight: FontWeights.semibold,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             Row(
               children: [
                 Expanded(
                   child: ActionCard(
-                    color: const Color(0xFFB8DE70),
+                    color: AppColors.actionRant,
                     title: "Rant",
                     desc: "Get something at\nyour chest",
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: Insets.base),
                 Expanded(
                   child: ActionCard(
-                    color: const Color(0xFF71A4FF),
+                    color: AppColors.actionReflect,
                     title: "Reflect",
                     desc: "Pause and think\nabout your day",
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             const Text(
               "Mood Overview",
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: FontSizes.lg,
+                fontWeight: FontWeights.semibold,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             TransparentCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,12 +224,12 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     "This Week",
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontSize: FontSizes.md,
+                      fontWeight: FontWeights.semibold,
                       color: Colors.grey.shade700,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Insets.lg),
                   WeekMoodRow(
                     weekMoods: weekMoods,
                     moodColor: _moodColor,
@@ -236,11 +237,11 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             StreakCard(streak: streak),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             SectionHeader(title: "Recent Journal"),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             ...List.generate(3, (i) {
               final entry = i < _moods.length ? _moods[i] : null;
               return JournalCard(
@@ -251,59 +252,59 @@ class _HomePageState extends State<HomePage> {
                 moodIndex: entry?.mood ?? 4,
               );
             }),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             const Text(
               "Tips for you",
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontSize: FontSizes.title,
+                fontWeight: FontWeights.bold,
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Insets.xs),
             Text(
               "Daily inspiration for a better you",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: FontSizes.md,
                 color: Colors.grey.shade500,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: Insets.lg),
             const StatsCard(),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             SectionHeader(title: "Your Moods"),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             MoodCountGrid(
               counts: counts,
               gridColors: _gridColors,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             SectionHeader(title: "Reminders"),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             Container(
               width: double.infinity,
-              height: 80,
+              height: Sizes.reminderPlaceholderHeight,
               decoration: BoxDecoration(
                 color: Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(Radii.card),
                 border: Border.all(color: Colors.grey.shade300, width: 1),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             const DashedBorderBox(
               child: Center(
                 child: Text(
                   "+ Add reminder",
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: FontSizes.lg,
+                    fontWeight: FontWeights.semibold,
                     color: Colors.purple,
                   ),
                 ),
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).padding.bottom + 100,
+              height: MediaQuery.of(context).padding.bottom + Sizes.bottomPadding,
             ),
           ],
         ),

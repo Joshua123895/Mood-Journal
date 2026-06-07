@@ -3,6 +3,7 @@ import '../data/data.dart';
 import '../data/entry.dart';
 import '../services/mood_service_instance.dart';
 import '../widgets/shared_widgets.dart';
+import '../theme/app_constants.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -91,15 +92,15 @@ class _JournalPageState extends State<JournalPage> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: Insets.pageHorizontal),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 24),
+            const SizedBox(height: Insets.xl),
             _buildHeader(),
-            const SizedBox(height: 24),
+            const SizedBox(height: Insets.xl),
             _buildDateStrip(),
-            const SizedBox(height: 24),
+            const SizedBox(height: Insets.xl),
             if (selectedEntry != null)
               JournalCard(
                 title: selectedEntry.note?.isNotEmpty == true
@@ -110,10 +111,10 @@ class _JournalPageState extends State<JournalPage> {
               )
             else
               _buildNoEntryCard(),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             if (_entries.length > 1) ...[
               _buildHistoryHeader(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Insets.base),
               ..._entries.where((e) =>
                   e.date.year != _selectedDate.year ||
                   e.date.month != _selectedDate.month ||
@@ -122,20 +123,20 @@ class _JournalPageState extends State<JournalPage> {
                         entry.mood < moodLibrary.length
                     ? moodLibrary[entry.mood].label
                     : "Unknown";
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: JournalCard(
-                      title: entry.note?.isNotEmpty == true
-                          ? entry.note!
-                          : "How I felt: $label",
-                      subtitle: _relativeDate(entry.date),
-                      moodIndex: entry.mood,
-                    ),
-                  );
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: Insets.cardMarginBottom),
+                  child: JournalCard(
+                    title: entry.note?.isNotEmpty == true
+                        ? entry.note!
+                        : "How I felt: $label",
+                    subtitle: _relativeDate(entry.date),
+                    moodIndex: entry.mood,
+                  ),
+                );
               }),
             ],
             SizedBox(
-              height: MediaQuery.of(context).padding.bottom + 100,
+              height: MediaQuery.of(context).padding.bottom + Sizes.bottomPadding,
             ),
           ],
         ),
@@ -150,16 +151,16 @@ class _JournalPageState extends State<JournalPage> {
         const Text(
           "Journal",
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: FontSizes.title,
+            fontWeight: FontWeights.bold,
             color: Colors.black,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: Insets.sm),
         Text(
           "Capture your thoughts",
           style: TextStyle(
-            fontSize: 14,
+            fontSize: FontSizes.md,
             color: Colors.grey.shade500,
           ),
         ),
@@ -172,11 +173,11 @@ class _JournalPageState extends State<JournalPage> {
     final start = DateTime(today.year, today.month, today.day - 13);
 
     return SizedBox(
-      height: 72,
+      height: Sizes.dateStripHeight,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: 14,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: Insets.md),
         itemBuilder: (context, i) {
           final date = DateTime(start.year, start.month, start.day + i);
           final isSelected = date.day == _selectedDate.day &&
@@ -192,10 +193,10 @@ class _JournalPageState extends State<JournalPage> {
           return GestureDetector(
             onTap: () => setState(() => _selectedDate = date),
             child: Container(
-              width: 48,
+              width: Sizes.datePill,
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF2F343A) : Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
+                color: isSelected ? AppColors.darkButton : Colors.transparent,
+                borderRadius: BorderRadius.circular(Radii.md),
                 border: !isSelected
                     ? Border.all(color: Colors.grey.shade300, width: 1)
                     : null,
@@ -210,18 +211,18 @@ class _JournalPageState extends State<JournalPage> {
                         Text(
                           _dayAbbr(date),
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: FontSizes.xs,
                             color: isSelected
                                 ? Colors.white70
                                 : Colors.grey.shade500,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: Insets.xs),
                         Text(
                           "${date.day}",
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontSize: FontSizes.lg,
+                            fontWeight: FontWeights.bold,
                             color: isSelected ? Colors.white : Colors.black87,
                           ),
                         ),
@@ -230,11 +231,11 @@ class _JournalPageState extends State<JournalPage> {
                   ),
                   if (dotColor != null)
                     Positioned(
-                      top: 4,
-                      right: 4,
+                      top: Insets.xs,
+                      right: Insets.xs,
                       child: Container(
-                        width: 8,
-                        height: 8,
+                        width: Sizes.dotIndicator,
+                        height: Sizes.dotIndicator,
                         decoration: BoxDecoration(
                           color: dotColor,
                           shape: BoxShape.circle,
@@ -253,10 +254,10 @@ class _JournalPageState extends State<JournalPage> {
   Widget _buildNoEntryCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(Insets.cardPaddingLarge),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(Radii.card),
         border: Border.all(color: Colors.grey.shade300, width: 1),
       ),
       child: Column(
@@ -265,16 +266,16 @@ class _JournalPageState extends State<JournalPage> {
           Text(
             "${_monthName(_selectedDate)} ${_selectedDate.day}, ${_selectedDate.year}",
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontSize: FontSizes.md,
+              fontWeight: FontWeights.semibold,
               color: Colors.grey.shade700,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Insets.base),
           Text(
             "No entry for this day",
             style: TextStyle(
-              fontSize: 14,
+              fontSize: FontSizes.md,
               color: Colors.grey.shade400,
             ),
           ),
@@ -287,8 +288,8 @@ class _JournalPageState extends State<JournalPage> {
     return const Text(
       "History",
       style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
+        fontSize: FontSizes.lg,
+        fontWeight: FontWeights.semibold,
         color: Colors.black,
       ),
     );

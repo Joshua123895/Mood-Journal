@@ -6,6 +6,7 @@ import 'mood/mood.dart' show MoodPage;
 import 'home/home.dart' show HomePage;
 import 'journal/journal.dart' show JournalPage;
 import 'services/mood_service_instance.dart';
+import 'theme/app_constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -98,17 +99,15 @@ class _MainPageState extends State<MainPage> {
 
   Widget _navBar() {
     return Container(
-      height: 72,
+      height: Sizes.navBarHeight,
       margin: EdgeInsets.only(
-        left: 24, 
-        right: 24, 
-        bottom: MediaQuery.of(context).padding.bottom + 12,
+        left: Insets.xl, 
+        right: Insets.xl, 
+        bottom: MediaQuery.of(context).padding.bottom + Insets.base,
       ),
       decoration: BoxDecoration(
-        color: Color(0xFFF5F6FA), 
-        // color: Colors.grey.shade50,
-        // color: Colors.redAccent,
-        borderRadius: BorderRadius.circular(32),
+        color: AppColors.navBar, 
+        borderRadius: BorderRadius.circular(Radii.xl),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +115,7 @@ class _MainPageState extends State<MainPage> {
         children: _navIcons.map((icon) {
           final int i = _navIcons.indexOf(icon);
           bool isActive = i == _currentIndex;
-          Color color = isActive? Colors.blue : Colors.black;
+          Color color = isActive ? Colors.blue : Colors.black;
           return Expanded (
             child: Material (
               color: Colors.transparent,
@@ -125,22 +124,22 @@ class _MainPageState extends State<MainPage> {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 hoverColor: Colors.transparent,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(Radii.lg),
                 child: SizedBox.expand(
                   child: Column(
                     children: [
                       Container (
                         alignment: Alignment.center,
                         margin: const EdgeInsets.only(
-                          left: 32,
-                          right: 32,
+                          left: Insets.xxl,
+                          right: Insets.xxl,
                           bottom: 0,
-                          top: 16,
+                          top: Insets.lg,
                         ),
                         child: SvgPicture.asset(
                           icon,
-                          width: 24,
-                          height: 24,
+                          width: Sizes.navIcon,
+                          height: Sizes.navIcon,
                           colorFilter: ColorFilter.mode(
                             color,
                             BlendMode.srcIn
@@ -151,8 +150,8 @@ class _MainPageState extends State<MainPage> {
                         _navName[i],
                         style: TextStyle(
                           color: color,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          fontSize: FontSizes.sm,
+                          fontWeight: FontWeights.medium,
                         ),
                       ),
                     ] 
@@ -186,8 +185,8 @@ class CenterPage extends StatelessWidget {
       child: Text(
         title,
         style: const TextStyle(
-          fontSize: 36,
-          fontWeight: FontWeight.bold,
+          fontSize: FontSizes.hero,
+          fontWeight: FontWeights.bold,
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_constants.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -20,8 +21,8 @@ class SectionHeader extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: FontSizes.lg,
+            fontWeight: FontWeights.semibold,
             color: Colors.black,
           ),
         ),
@@ -31,9 +32,9 @@ class SectionHeader extends StatelessWidget {
             child: Text(
               actionLabel!,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: FontSizes.md,
                 color: Colors.black,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeights.semibold,
               ),
             ),
           ),

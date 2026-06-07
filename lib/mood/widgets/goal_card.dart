@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/shared_widgets.dart';
+import '../../theme/app_constants.dart';
 
 class GoalCard extends StatelessWidget {
   final String name;
@@ -22,22 +23,22 @@ class GoalCard extends StatelessWidget {
           Text(
             name,
             style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+              fontSize: FontSizes.md,
+              fontWeight: FontWeights.bold,
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: Insets.xs),
           Text(
             "$current/$total times a week",
             style: TextStyle(
-              fontSize: 12,
+              fontSize: FontSizes.sm,
               color: Colors.grey.shade500,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Insets.base),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(Radii.xs),
             child: LinearProgressIndicator(
               value: current / total,
               backgroundColor: Colors.grey.shade200,

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../data/data.dart';
+import '../../theme/app_constants.dart';
 
 class ThisMonthChart extends StatelessWidget {
   final Map<String, int> counts;
@@ -14,13 +15,13 @@ class ThisMonthChart extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 120,
-          height: 120,
+          width: Sizes.donutChartSize,
+          height: Sizes.donutChartSize,
           child: Stack(
             alignment: Alignment.center,
             children: [
               CustomPaint(
-                size: const Size(120, 120),
+                size: const Size(Sizes.donutChartSize, Sizes.donutChartSize),
                 painter: _DonutPainter(
                   counts: counts,
                   colors: moodLibrary.map((m) => m.bgColor).toList(),
@@ -29,37 +30,37 @@ class ThisMonthChart extends StatelessWidget {
               Text(
                 "$total",
                 style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontSize: FontSizes.title,
+                  fontWeight: FontWeights.bold,
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(width: 24),
+        const SizedBox(width: Insets.xl),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: moodLibrary.map((m) {
               final count = counts[m.label] ?? 0;
               return Padding(
-                padding: const EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.only(bottom: Insets.xs),
                 child: Row(
                   children: [
                     Container(
-                      width: 8,
-                      height: 8,
+                      width: Sizes.legendDot,
+                      height: Sizes.legendDot,
                       decoration: BoxDecoration(
                         color: m.bgColor,
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: Insets.sm),
                     Expanded(
                       child: Text(
                         "${m.label}: $count",
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: FontSizes.sm,
                           color: Colors.grey.shade600,
                         ),
                       ),

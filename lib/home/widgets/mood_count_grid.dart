@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/data.dart';
+import '../../theme/app_constants.dart';
 
 class MoodCountGrid extends StatelessWidget {
   final Map<String, int> counts;
@@ -16,7 +17,7 @@ class MoodCountGrid extends StatelessWidget {
     return Column(
       children: List.generate(2, (row) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: Insets.base),
           child: Row(
             children: List.generate(3, (col) {
               final index = row * 3 + col;
@@ -28,10 +29,10 @@ class MoodCountGrid extends StatelessWidget {
               return Expanded(
                 child: Container(
                   margin: EdgeInsets.only(
-                    left: col == 0 ? 0 : 6,
-                    right: col == 2 ? 0 : 6,
+                    left: col == 0 ? 0 : Insets.sm,
+                    right: col == 2 ? 0 : Insets.sm,
                   ),
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(Insets.base),
                   decoration: BoxDecoration(
                     color: gridColors[index],
                     borderRadius: BorderRadius.circular(16),
@@ -42,16 +43,16 @@ class MoodCountGrid extends StatelessWidget {
                       Text(
                         mood.label,
                         style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: FontSizes.md,
+                          fontWeight: FontWeights.semibold,
                           color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: Insets.xs),
                       Text(
                         "$count times",
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: FontSizes.sm,
                           color: Colors.grey.shade700,
                         ),
                       ),

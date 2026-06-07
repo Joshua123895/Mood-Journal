@@ -3,6 +3,7 @@ import '../data/data.dart';
 import '../data/entry.dart';
 import '../services/mood_service_instance.dart';
 import '../widgets/shared_widgets.dart';
+import '../theme/app_constants.dart';
 import 'widgets/mood_row.dart';
 import 'widgets/mood_picker.dart';
 import 'widgets/this_month_chart.dart';
@@ -122,41 +123,41 @@ class _MoodPageState extends State<MoodPage> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: Insets.pageHorizontal),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 24),
+            const SizedBox(height: Insets.xl),
             const Text(
               "How are you feeling?",
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontSize: FontSizes.title,
+                fontWeight: FontWeights.bold,
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: Insets.sm),
             Text(
               "Track your emotions",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: FontSizes.lg,
                 color: Colors.grey.shade500,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: Insets.xl),
             const MoodRow(),
-            const SizedBox(height: 24),
+            const SizedBox(height: Insets.xl),
             const MoodPicker(),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             const Text(
               "Mood Overview",
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: FontSizes.lg,
+                fontWeight: FontWeights.semibold,
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             TransparentCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,12 +165,12 @@ class _MoodPageState extends State<MoodPage> {
                   Text(
                     "This Week",
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontSize: FontSizes.md,
+                      fontWeight: FontWeights.semibold,
                       color: Colors.grey.shade700,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Insets.lg),
                   WeekMoodRow(
                     weekMoods: weekMoods,
                     moodColor: _moodColor,
@@ -177,7 +178,7 @@ class _MoodPageState extends State<MoodPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             TransparentCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,70 +186,70 @@ class _MoodPageState extends State<MoodPage> {
                   Text(
                     "This Month",
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontSize: FontSizes.md,
+                      fontWeight: FontWeights.semibold,
                       color: Colors.grey.shade700,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Insets.lg),
                   ThisMonthChart(counts: _thisMonthMoodCounts()),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             const Text(
               "Mood Insights",
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: FontSizes.lg,
+                fontWeight: FontWeights.semibold,
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             MoodInsightsGrid(
               mostCommon: _mostCommonMood(),
               leastCommon: _leastCommonMood(),
               bestDay: _bestDay(),
               averageMood: _averageMoodLast7Days(),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: Insets.xxl),
             const Text(
               "Mood Goals",
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: FontSizes.lg,
+                fontWeight: FontWeights.semibold,
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Insets.xs),
             Text(
               "Set your goal intentions",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: FontSizes.md,
                 color: Colors.grey.shade500,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             const GoalCard(
               name: "Stay Positive",
               current: 3,
               total: 7,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Insets.base),
             const DashedBorderBox(
               child: Center(
                 child: Text(
                   "+ Add New Goal",
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: FontSizes.lg,
+                    fontWeight: FontWeights.semibold,
                     color: Colors.purple,
                   ),
                 ),
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).padding.bottom + 100,
+              height: MediaQuery.of(context).padding.bottom + Sizes.bottomPadding,
             ),
           ],
         ),

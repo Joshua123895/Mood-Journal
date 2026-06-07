@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_constants.dart';
 
 class MoodJar extends StatelessWidget {
   final double fillPercentage;
@@ -30,7 +31,7 @@ class MoodJar extends StatelessWidget {
             width: jarWidth,
             height: jarHeight - capHeight,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
+              borderRadius: BorderRadius.circular(Radii.xxl),
               border: Border.all(
                 width: borderWidth,
                 color: Colors.black26,
@@ -54,16 +55,6 @@ class MoodJar extends StatelessWidget {
                   heightFactor: fillPercentage.clamp(0.05, 1.0),
                   child: Container(
                     width: double.infinity,
-                    // decoration: BoxDecoration(
-                    //   gradient: LinearGradient(
-                    //     begin: Alignment.topCenter,
-                    //     end: Alignment.bottomCenter,
-                    //     colors: [
-                    //       Colors.orange.shade300,
-                    //       Colors.orange.shade600,
-                    //     ],
-                    //   ),
-                    // ),
                     color: Colors.blue.shade400.withValues(alpha: 0.3),
                   ),
                 ),
@@ -92,16 +83,16 @@ class MoodJar extends StatelessWidget {
                 Text(
                   "$moodScore",
                   style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
+                    fontSize: FontSizes.hero,
+                    fontWeight: FontWeights.bold,
                     color: textColor,
                   ),
                 ),
                 Text(
                   "Mood Score",
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                    fontSize: FontSizes.sm,
+                    fontWeight: FontWeights.medium,
                     color: textColor,
                   ),
                 ),

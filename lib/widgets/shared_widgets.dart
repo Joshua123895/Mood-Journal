@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/entry.dart';
 import '../data/data.dart';
 import '../mood/face.dart';
+import '../theme/app_constants.dart';
 
 class TransparentCard extends StatelessWidget {
   final Widget child;
@@ -14,10 +15,10 @@ class TransparentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: padding ?? const EdgeInsets.all(20),
+      padding: padding ?? const EdgeInsets.all(Insets.cardPaddingLarge),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(Radii.card),
         border: Border.all(color: Colors.grey.shade300, width: 1),
       ),
       child: child,
@@ -54,29 +55,29 @@ class WeekMoodRow extends StatelessWidget {
         return Column(
           children: [
             Container(
-              width: 36,
-              height: 36,
+              width: Sizes.moodFaceSmall,
+              height: Sizes.moodFaceSmall,
               decoration: BoxDecoration(
                 color: entry != null
                     ? moodColor(entry.mood)
                     : Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(Radii.sm),
               ),
               child: entry != null && entry.mood >= 0 && entry.mood < moodLibrary.length
                   ? FittedBox(
                       fit: BoxFit.contain,
                       child: Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(Insets.md),
                         child: MoodFace(data: moodLibrary[entry.mood]),
                       ),
                     )
                   : null,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: Insets.sm),
             Text(
               _dayAbbr(date),
               style: TextStyle(
-                fontSize: 12,
+                fontSize: FontSizes.sm,
                 color: Colors.grey.shade600,
               ),
             ),
@@ -107,11 +108,11 @@ class JournalCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: Insets.cardMarginBottom),
+      padding: const EdgeInsets.all(Insets.cardPadding),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(Radii.card),
         border: Border.all(color: Colors.grey.shade300, width: 1),
       ),
       child: Row(
@@ -123,15 +124,15 @@ class JournalCard extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontSize: FontSizes.md,
+                    fontWeight: FontWeights.semibold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: Insets.xs),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: FontSizes.sm,
                     color: Colors.grey.shade500,
                   ),
                 ),
@@ -140,8 +141,8 @@ class JournalCard extends StatelessWidget {
           ),
           if (mood != null)
             Container(
-              width: 36,
-              height: 36,
+              width: Sizes.moodFaceSmall,
+              height: Sizes.moodFaceSmall,
               decoration: BoxDecoration(
                 color: mood.bgColor,
                 shape: BoxShape.circle,
@@ -150,7 +151,7 @@ class JournalCard extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.contain,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(Insets.lg),
                     child: MoodFace(data: mood),
                   ),
                 ),
@@ -169,7 +170,7 @@ class DashedBorderBox extends StatelessWidget {
   const DashedBorderBox({
     super.key,
     required this.child,
-    this.height = 80,
+    this.height = Sizes.reminderPlaceholderHeight,
   });
 
   @override
@@ -177,17 +178,17 @@ class DashedBorderBox extends StatelessWidget {
     return CustomPaint(
       painter: _DashedBorderPainter(
         color: Colors.purple.withValues(alpha: 0.5),
-        strokeWidth: 1.5,
-        dashWidth: 6,
-        dashGap: 4,
-        radius: 20,
+        strokeWidth: DashedBorder.strokeWidth,
+        dashWidth: DashedBorder.dashWidth,
+        dashGap: DashedBorder.dashGap,
+        radius: DashedBorder.radius,
       ),
       child: Container(
         width: double.infinity,
         height: height,
         decoration: BoxDecoration(
           color: Colors.purple.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(Radii.card),
         ),
         child: child,
       ),

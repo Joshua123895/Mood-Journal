@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_constants.dart';
 
 class GreetingHeader extends StatelessWidget {
   final String greeting;
@@ -15,19 +16,19 @@ class GreetingHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 24),
+        const SizedBox(height: Insets.xl),
         Text(
           greeting,
           style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: FontSizes.title,
+            fontWeight: FontWeights.bold,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: Insets.sm),
         Text(
           subtitle,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: FontSizes.lg,
             color: Colors.grey.shade500,
           ),
         ),

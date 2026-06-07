@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/data.dart';
+import '../../theme/app_constants.dart';
 import '../face.dart';
 
 class MoodPicker extends StatefulWidget {
@@ -86,30 +87,30 @@ class _MoodPickerState extends State<MoodPicker>
       constraints: const BoxConstraints(minHeight: 300),
       decoration: BoxDecoration(
         color: mood.bgColor.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(Radii.card),
         border: Border.all(color: mood.bgColor, width: 1),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 16),
+          const SizedBox(height: Insets.lg),
           Transform.scale(
             scale: 0.8,
             child: MoodFace(data: mood),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Insets.base),
           Text(
             mood.label,
             style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
+              fontSize: FontSizes.xxl,
+              fontWeight: FontWeights.semibold,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Insets.base),
           _buildSlider(darkerColor),
-          const SizedBox(height: 12),
+          const SizedBox(height: Insets.base),
           _buildNoteInput(),
-          const SizedBox(height: 16),
+          const SizedBox(height: Insets.lg),
         ],
       ),
     );
@@ -117,7 +118,7 @@ class _MoodPickerState extends State<MoodPicker>
 
   Widget _buildSlider(Color trackColor) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: Insets.pageHorizontal),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -161,7 +162,7 @@ class _MoodPickerState extends State<MoodPicker>
 
   Widget _buildNoteInput() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: Insets.pageHorizontal),
       child: Row(
         children: [
           Expanded(
@@ -171,24 +172,24 @@ class _MoodPickerState extends State<MoodPicker>
                 hintText: "Add a note...",
                 hintStyle: TextStyle(color: Colors.grey.shade400),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(Radii.pill),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.5),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+                  horizontal: Insets.lg,
+                  vertical: Insets.base,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: Insets.md),
           Container(
-            width: 44,
-            height: 44,
+            width: Sizes.moodFaceMedium,
+            height: Sizes.moodFaceMedium,
             decoration: const BoxDecoration(
-              color: Color(0xFF2F343A),
+              color: AppColors.darkButton,
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -321,7 +322,7 @@ class _ThumbShape extends SliderComponentShape {
     final canvas = context.canvas;
 
     final paint = Paint()
-      ..color = const Color(0xFF2F343A)
+      ..color = AppColors.darkButton
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius, paint);

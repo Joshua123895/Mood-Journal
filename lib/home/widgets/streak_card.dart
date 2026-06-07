@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_constants.dart';
 
 class StreakCard extends StatelessWidget {
   final int streak;
@@ -9,10 +10,10 @@ class StreakCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(Insets.cardPaddingLarge),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(Radii.card),
         border: Border.all(color: Colors.grey.shade300, width: 1),
       ),
       child: Column(
@@ -21,33 +22,33 @@ class StreakCard extends StatelessWidget {
           Text(
             "Journal Streak",
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontSize: FontSizes.md,
+              fontWeight: FontWeights.semibold,
               color: Colors.grey.shade700,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Insets.base),
           Row(
             children: [
               const Text(
                 "\u{1F525}",
-                style: TextStyle(fontSize: 28),
+                style: TextStyle(fontSize: FontSizes.streakEmoji),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: Insets.md),
               Text(
                 "$streak",
                 style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontSize: FontSizes.streakNumber,
+                  fontWeight: FontWeights.bold,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: Insets.xs),
           Text(
             "Keep it going",
             style: TextStyle(
-              fontSize: 14,
+              fontSize: FontSizes.md,
               color: Colors.grey.shade500,
             ),
           ),

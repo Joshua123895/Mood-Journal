@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
-
-const Map<String, String> _moodEmojis = {
-  "Sad": "😢",
-  "Anxious": "😰",
-  "Stressed": "😫",
-  "Calm": "😌",
-  "Happy": "😊",
-  "Loved": "😍",
-};
+import '../../data/data.dart';
+import '../../theme/app_constants.dart';
+import '../face.dart';
 
 class MoodInsightsGrid extends StatelessWidget {
   final String mostCommon;
@@ -33,35 +27,31 @@ class MoodInsightsGrid extends StatelessWidget {
               child: _InsightCard(
                 title: "Most Common",
                 value: mostCommon,
-                emoji: _moodEmojis[mostCommon] ?? "",
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Insets.base),
             Expanded(
               child: _InsightCard(
                 title: "Least Common",
                 value: leastCommon,
-                emoji: _moodEmojis[leastCommon] ?? "",
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Insets.base),
         Row(
           children: [
             Expanded(
               child: _InsightCard(
                 title: "Best Day",
                 value: bestDay,
-                emoji: _moodEmojis[bestDay] ?? "",
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Insets.base),
             Expanded(
               child: _InsightCard(
                 title: "Average Mood",
                 value: averageMood,
-                emoji: _moodEmojis[averageMood] ?? "",
               ),
             ),
           ],
@@ -74,52 +64,67 @@ class MoodInsightsGrid extends StatelessWidget {
 class _InsightCard extends StatelessWidget {
   final String title;
   final String value;
-  final String emoji;
 
   const _InsightCard({
     required this.title,
     required this.value,
-    required this.emoji,
   });
 
   @override
   Widget build(BuildContext context) {
+    final moodIndex = moodLibrary.indexWhere((m) => m.label == value);
+    final hasMood = moodIndex >= 0;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Insets.cardPadding),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(Radii.card),
         border: Border.all(color: Colors.grey.shade300, width: 1),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade500,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: FontSizes.sm,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+                const SizedBox(height: Insets.xs),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: FontSizes.lg,
+                    fontWeight: FontWeights.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                emoji,
-                style: const TextStyle(fontSize: 18),
+          if (hasMood)
+            Container(
+              width: Sizes.moodFaceSmall,
+              height: Sizes.moodFaceSmall,
+              decoration: BoxDecoration(
+                color: moodLibrary[moodIndex].bgColor,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(width: 6),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              child: ClipOval(
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Padding(
+                    padding: const EdgeInsets.all(Insets.lg),
+                    child: MoodFace(data: moodLibrary[moodIndex]),
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
         ],
       ),
     );

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_constants.dart';
 
 class StatsCard extends StatelessWidget {
   const StatsCard({super.key});
-  final double borderRadius = 20;
+  final double borderRadius = Radii.card;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +26,9 @@ class StatsCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                left: 20,
-                top: 16,
-                bottom: 14,
+                left: Insets.cardPaddingLarge,
+                top: Insets.lg,
+                bottom: Insets.md,
                 child: SizedBox(
                   width: constraints.maxWidth - 2 * borderRadius - svgWidth,
                   child: const Column(
@@ -37,17 +38,15 @@ class StatsCard extends StatelessWidget {
                       Text(
                         "It's okay to not be okay.",
                         style: TextStyle(
-                          fontSize: 14,
-                          // fontWeight: FontWeight.bold,
+                          fontSize: FontSizes.md,
                           color: Colors.white,
                         ),
                       ),
-                      // Spacer(),
-                      SizedBox(height: 12),
+                      SizedBox(height: Insets.base),
                       Text(
                         "Give yourself grace and rest when you need it.",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: FontSizes.md,
                           color: Colors.white70,
                         ),
                       ),

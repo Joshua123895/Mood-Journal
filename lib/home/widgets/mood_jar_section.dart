@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_constants.dart';
 import 'mood_jar.dart';
 
 class MoodJarSection extends StatelessWidget {
@@ -19,19 +20,19 @@ class MoodJarSection extends StatelessWidget {
           fillPercentage: fillPercentage,
           moodScore: score,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Insets.md),
         const Text(
           "You are doing well today",
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: FontSizes.lg,
+            fontWeight: FontWeights.semibold,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: Insets.xs),
         Text(
           "Keep protecting your peace",
           style: TextStyle(
-            fontSize: 14,
+            fontSize: FontSizes.md,
             color: Colors.grey.shade500,
           ),
         ),

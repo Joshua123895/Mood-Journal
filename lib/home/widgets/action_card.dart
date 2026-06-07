@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_constants.dart';
 
 class ActionCard extends StatelessWidget {
   final Color color;
@@ -15,24 +16,22 @@ class ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(Insets.cardPaddingLarge),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(Radii.card),
       ),
       child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            // textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontSize: FontSizes.xxl,
+              fontWeight: FontWeights.bold,
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: Insets.sm),
           Text(
             desc,
             textAlign: TextAlign.center,

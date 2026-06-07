@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/data.dart';
+import '../../theme/app_constants.dart';
 import '../face.dart';
 
 class MoodRow extends StatelessWidget {
@@ -8,7 +9,7 @@ class MoodRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 70,
+      height: Sizes.moodRowHeight,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: moodLibrary.map((m) {
@@ -16,19 +17,19 @@ class MoodRow extends StatelessWidget {
             children: [
               ClipOval(
                 child: Container(
-                  width: 44,
-                  height: 44,
+                  width: Sizes.moodFaceMedium,
+                  height: Sizes.moodFaceMedium,
                   color: m.bgColor,
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(Insets.xl),
                       child: MoodFace(data: m),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: Insets.xs),
               Text(
                 m.label,
                 style: TextStyle(

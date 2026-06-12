@@ -138,7 +138,7 @@ class _MainPageState extends State<MainPage> {
 					final i = e.key;
 					final item = e.value;
 					final bool isActive = i == _currentIndex;
-					final Color color = isActive ? Colors.black : Colors.grey.shade400;
+					final Color color = isActive ? const Color(0xFF6C63FF) : Colors.grey.shade400;
 					return Expanded(
 						child: Material(
 							color: Colors.transparent,

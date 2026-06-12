@@ -50,12 +50,12 @@ class AppColors {
   static const Color navBar = Color(0xFFF5F6FA);
   static const Color darkButton = Color(0xFF2F343A);
 
-  static const Color moodGrid1 = Color(0xFFB8DE70);
-  static const Color moodGrid2 = Color(0xFF71A4FF);
-  static const Color moodGrid3 = Color(0xFFFFB347);
-  static const Color moodGrid4 = Color(0xFFFF6B6B);
-  static const Color moodGrid5 = Color(0xFFA78BFA);
-  static const Color moodGrid6 = Color(0xFFF472B6);
+  static const Color moodGrid1 = Color(0xFFBFD6F2); // Sad - soft blue
+  static const Color moodGrid2 = Color(0xFFCDEEE3); // Calm - soft mint
+  static const Color moodGrid3 = Color(0xFFD6CCE8); // Anxious - soft lavender
+  static const Color moodGrid4 = Color(0xFFF2C6B8); // Stressed - soft peach
+  static const Color moodGrid5 = Color(0xFFFFF1B8); // Happy - soft yellow
+  static const Color moodGrid6 = Color(0xFFF6C1D1); // Loved - soft pink
 
   static const Color actionRant = Color(0xFFB8DE70);
   static const Color actionReflect = Color(0xFF71A4FF);

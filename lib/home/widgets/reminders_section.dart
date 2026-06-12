@@ -139,87 +139,106 @@ class _RemindersSectionState extends State<RemindersSection> {
     );
   }
 
+  String _formatTime(int hour, int minute) {
+    final period = hour < 12 ? 'AM' : 'PM';
+    final h = hour % 12 == 0 ? 12 : hour % 12;
+    final m = minute.toString().padLeft(2, '0');
+    final periodWord = hour < 12
+        ? 'morning'
+        : hour < 17
+            ? 'afternoon'
+            : 'evening';
+    return 'Every $periodWord at $h:$m $period';
+  }
+
   @override
   Widget build(BuildContext context) {
+    const activeColor = Color(0xFF6C63FF);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: "Reminders"),
+        SectionHeader(
+          title: "Reminders",
+          actionLabel: "See all",
+          onAction: () {},
+        ),
         const SizedBox(height: Insets.base),
         if (_reminders.isNotEmpty)
-          ..._reminders.map((r) {
-            final timeStr =
-                '${r.hour.toString().padLeft(2, '0')}:${r.minute.toString().padLeft(2, '0')}';
-            return Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(bottom: Insets.md),
-              padding: const EdgeInsets.all(Insets.cardPadding),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(Radii.card),
-                border: Border.all(color: Colors.grey.shade300, width: 1),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          r.label,
-                          style: const TextStyle(
-                            fontSize: FontSizes.md,
-                            fontWeight: FontWeights.semibold,
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(Radii.card),
+              border: Border.all(color: Colors.grey.shade200, width: 1),
+            ),
+            child: Column(
+              children: _reminders.asMap().entries.map((e) {
+                final i = e.key;
+                final r = e.value;
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Insets.cardPadding,
+                        vertical: Insets.base,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            i == 0 ? Icons.notifications_none : Icons.circle_outlined,
+                            color: Colors.grey.shade400,
+                            size: 22,
                           ),
-                        ),
-                        const SizedBox(height: Insets.xs),
-                        Text(
-                          '$timeStr • ${r.repeat}',
-                          style: TextStyle(
-                            fontSize: FontSizes.sm,
-                            color: Colors.grey.shade500,
+                          const SizedBox(width: Insets.base),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  r.label,
+                                  style: const TextStyle(
+                                    fontSize: FontSizes.md,
+                                    fontWeight: FontWeights.semibold,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _formatTime(r.hour, r.minute),
+                                  style: TextStyle(
+                                    fontSize: FontSizes.sm,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                          Switch(
+                            value: r.active,
+                            activeThumbColor: Colors.white,
+                            activeTrackColor: activeColor,
+                            onChanged: (v) {
+                              setState(() => r.active = v);
+                              r.save();
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                    child: Switch(
-                      value: r.active,
-                      activeTrackColor: Colors.purple,
-                      onChanged: (v) {
-                        setState(() {
-                          r.active = v;
-                        });
-                        r.save();
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                    child: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red, size: 28),
-                      onPressed: () async {
-                        await moodService.deleteReminder(r);
-                        _loadReminders();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
+                    if (i < _reminders.length - 1)
+                      Divider(height: 1, color: Colors.grey.shade200),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
         if (_reminders.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: Insets.xl),
             child: Center(
               child: Text(
                 "No reminders yet",
-                style: TextStyle(
-                  fontSize: FontSizes.md,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: FontSizes.md, color: Colors.grey),
               ),
             ),
           ),
@@ -229,11 +248,11 @@ class _RemindersSectionState extends State<RemindersSection> {
           child: const DashedBorderBox(
             child: Center(
               child: Text(
-                "+ Add reminder",
+                "+ Add Reminder",
                 style: TextStyle(
                   fontSize: FontSizes.lg,
                   fontWeight: FontWeights.semibold,
-                  color: Colors.purple,
+                  color: activeColor,
                 ),
               ),
             ),

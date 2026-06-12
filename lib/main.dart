@@ -97,7 +97,7 @@ class _MainPageState extends State<MainPage> {
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
-			extendBody: true,
+			backgroundColor: Colors.white,
 			body: PageView(
 				controller: _pageController,
 				onPageChanged: (index) => setState(() => _currentIndex = index),
@@ -121,8 +121,15 @@ class _MainPageState extends State<MainPage> {
 				bottom: MediaQuery.of(context).padding.bottom + Insets.base,
 			),
 			decoration: BoxDecoration(
-				color: AppColors.navBar,
+				color: Colors.white,
 				borderRadius: BorderRadius.circular(Radii.xl),
+				boxShadow: [
+					BoxShadow(
+						color: Colors.black.withValues(alpha: 0.08),
+						blurRadius: 16,
+						offset: const Offset(0, -2),
+					),
+				],
 			),
 			child: Row(
 				crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +138,7 @@ class _MainPageState extends State<MainPage> {
 					final i = e.key;
 					final item = e.value;
 					final bool isActive = i == _currentIndex;
-					final Color color = isActive ? Colors.blue : Colors.black;
+					final Color color = isActive ? Colors.black : Colors.grey.shade400;
 					return Expanded(
 						child: Material(
 							color: Colors.transparent,

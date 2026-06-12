@@ -1,22 +1,21 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'widgets/mood_jar_section.dart';
-import 'widgets/action_card.dart';
-import 'widgets/stats_card.dart';
 import 'widgets/greeting_header.dart';
-import 'widgets/section_header.dart';
-import 'widgets/streak_card.dart';
-import 'widgets/mood_count_grid.dart';
+import 'widgets/tips_section.dart';
+import 'widgets/mood_overview_section.dart';
+import 'widgets/recent_journal_section.dart';
+import 'widgets/moods_section.dart';
+import 'widgets/reminders_section.dart';
 import '../data/data.dart';
 import '../data/entry.dart';
 import '../services/mood_service_instance.dart';
-import '../widgets/shared_widgets.dart';
 import '../theme/app_constants.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final void Function(DateTime date)? onNavigateToJournal;
+
+  const HomePage({super.key, this.onNavigateToJournal});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -24,26 +23,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<MoodEntry> _moods = [];
-  final Random _random = Random();
-  late final List<String> _journalTitles;
-  final List<Color> _gridColors = const [
-    AppColors.moodGrid1,
-    AppColors.moodGrid2,
-    AppColors.moodGrid3,
-    AppColors.moodGrid4,
-    AppColors.moodGrid5,
-    AppColors.moodGrid6,
-  ];
 
   @override
   void initState() {
     super.initState();
     _loadMoods();
-    _initRandomData();
-  }
-
-  void _initRandomData() {
-    _journalTitles = List.generate(3, (_) => _randomWords().join(' '));
   }
 
   Future<void> _loadMoods() async {
@@ -64,104 +48,121 @@ class _HomePageState extends State<HomePage> {
     return "There";
   }
 
-  int _calculateScore() {
-    if (_moods.isEmpty) return 0;
-    const scores = [20, 35, 25, 70, 85, 100];
-    int total = 0;
-    final recent = _moods.take(30).toList();
-    for (final m in recent) {
-      if (m.mood >= 0 && m.mood < scores.length) {
-        total += scores[m.mood];
-      }
-    }
-    return (total / recent.length).round();
-  }
-
-  List<MoodEntry?> _thisWeekMoods() {
-    final today = DateTime.now();
-    final List<MoodEntry?> week = [];
-    for (int i = 6; i >= 0; i--) {
-      final date = DateTime(today.year, today.month, today.day - i);
-      final entry = _moods.cast<MoodEntry?>().firstWhere(
-        (m) =>
-            m!.date.year == date.year &&
-            m.date.month == date.month &&
-            m.date.day == date.day,
-        orElse: () => null,
-      );
-      week.add(entry);
-    }
-    return week;
-  }
-
-  int _journalStreak() {
-    if (_moods.isEmpty) return 0;
-    final sorted = List<MoodEntry>.from(_moods)
-      ..sort((a, b) => b.date.compareTo(a.date));
-    int streak = 0;
-    final today = DateTime.now();
-    for (int i = 0; i < sorted.length; i++) {
-      final expected = DateTime(today.year, today.month, today.day - streak);
-      final entryDate = sorted[i].date;
-      if (entryDate.year == expected.year &&
-          entryDate.month == expected.month &&
-          entryDate.day == expected.day) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-    return streak;
-  }
-
-  Color _moodColor(int moodIndex) {
-    if (moodIndex >= 0 && moodIndex < moodLibrary.length) {
-      return moodLibrary[moodIndex].bgColor;
-    }
-    return Colors.grey.shade200;
-  }
-
-  List<String> _randomWords() {
-    const words = [
-      'Sunny', 'Bright', 'Cloudy', 'Stormy', 'Peaceful', 'Quiet',
-      'Gentle', 'Wild', 'Calm', 'Restless', 'Hopeful', 'Joyful',
-      'Warm', 'Sweet', 'Fresh', 'Cozy', 'Breezy', 'Dreamy',
-      'Vibrant', 'Serene', 'Bold', 'Mellow', 'Lively', 'Tranquil',
-    ];
-    final shuffled = List<String>.from(words)..shuffle(_random);
-    return shuffled.take(3).toList();
-  }
-
-  String _relativeDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final entryDate = DateTime(date.year, date.month, date.day);
-    final diff = today.difference(entryDate).inDays;
-    if (diff == 0) return 'the day like today';
-    if (diff == 1) return 'yesterday';
-    return '$diff days ago';
-  }
-
-  Map<String, int> _moodCounts() {
-    final counts = <String, int>{};
-    for (final mood in moodLibrary) {
-      counts[mood.label] = 0;
-    }
-    for (final entry in _moods) {
-      if (entry.mood >= 0 && entry.mood < moodLibrary.length) {
-        counts[moodLibrary[entry.mood].label] =
-            (counts[moodLibrary[entry.mood].label] ?? 0) + 1;
-      }
-    }
-    return counts;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final score = _calculateScore();
-    final weekMoods = _thisWeekMoods();
-    final streak = _journalStreak();
-    final counts = _moodCounts();
+    final score = _moods.isEmpty
+        ? 0
+        : (() {
+            const scores = [20, 35, 25, 70, 85, 100];
+            int total = 0;
+            final recent = _moods.take(30).toList();
+            for (final m in recent) {
+              if (m.mood >= 0 && m.mood < scores.length) {
+                total += scores[m.mood];
+              }
+            }
+            return (total / recent.length).round();
+          })();
+
+    final weekMoods = () {
+      final today = DateTime.now();
+      final List<MoodEntry?> week = [];
+      for (int i = 6; i >= 0; i--) {
+        final date = DateTime(today.year, today.month, today.day - i);
+        final entry = _moods.cast<MoodEntry?>().firstWhere(
+              (m) =>
+                  m!.date.year == date.year &&
+                  m.date.month == date.month &&
+                  m.date.day == date.day,
+              orElse: () => null,
+            );
+        week.add(entry);
+      }
+      return week;
+    }();
+
+    final streak = _moods.isEmpty
+        ? 0
+        : (() {
+            final sorted = List<MoodEntry>.from(_moods)
+              ..sort((a, b) => b.date.compareTo(a.date));
+            final today = DateTime.now();
+
+            bool hasToday = sorted.isNotEmpty &&
+                sorted[0].date.year == today.year &&
+                sorted[0].date.month == today.month &&
+                sorted[0].date.day == today.day;
+
+            if (!hasToday) {
+              final yesterday =
+                  DateTime(today.year, today.month, today.day - 1);
+              bool hasYesterday = sorted.any((e) =>
+                  e.date.year == yesterday.year &&
+                  e.date.month == yesterday.month &&
+                  e.date.day == yesterday.day);
+              if (!hasYesterday) return 0;
+            }
+
+            int startDay = hasToday ? 0 : 1;
+            int s = 0;
+            for (final entry in sorted) {
+              final expected = DateTime(
+                  today.year, today.month, today.day - (startDay + s));
+              if (entry.date.year == expected.year &&
+                  entry.date.month == expected.month &&
+                  entry.date.day == expected.day) {
+                s++;
+              } else {
+                break;
+              }
+            }
+            return s;
+          })();
+
+    Color moodColor(int moodIndex) {
+      if (moodIndex >= 0 && moodIndex < moodLibrary.length) {
+        return moodLibrary[moodIndex].bgColor;
+      }
+      return Colors.grey.shade200;
+    }
+
+    final counts = () {
+      final c = <String, int>{};
+      for (final mood in moodLibrary) {
+        c[mood.label] = 0;
+      }
+      for (final entry in _moods) {
+        if (entry.mood >= 0 && entry.mood < moodLibrary.length) {
+          c[moodLibrary[entry.mood].label] =
+              (c[moodLibrary[entry.mood].label] ?? 0) + 1;
+        }
+      }
+      return c;
+    }();
+
+    final journalTitles = _moods
+        .take(3)
+        .map((entry) => entry.note ?? "No note")
+        .toList();
+
+    String relativeDate(DateTime date) {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final entryDate = DateTime(date.year, date.month, date.day);
+      final diff = today.difference(entryDate).inDays;
+      if (diff == 0) return 'the day like today';
+      if (diff == 1) return 'yesterday';
+      return '$diff days ago';
+    }
+
+    const gridColors = [
+      AppColors.moodGrid1,
+      AppColors.moodGrid2,
+      AppColors.moodGrid3,
+      AppColors.moodGrid4,
+      AppColors.moodGrid5,
+      AppColors.moodGrid6,
+    ];
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -181,130 +182,30 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: Insets.xxl),
-            const Text(
-              "Quick Actions",
-              style: TextStyle(
-                fontSize: FontSizes.lg,
-                fontWeight: FontWeights.semibold,
-              ),
-            ),
-            const SizedBox(height: Insets.base),
-            Row(
-              children: [
-                Expanded(
-                  child: ActionCard(
-                    color: AppColors.actionRant,
-                    title: "Rant",
-                    desc: "Get something at\nyour chest",
-                  ),
-                ),
-                const SizedBox(width: Insets.base),
-                Expanded(
-                  child: ActionCard(
-                    color: AppColors.actionReflect,
-                    title: "Reflect",
-                    desc: "Pause and think\nabout your day",
-                  ),
-                ),
-              ],
+            const TipsSection(),
+            const SizedBox(height: Insets.xxl),
+            MoodOverviewSection(
+              weekMoods: weekMoods,
+              moodColor: moodColor,
+              streak: streak,
             ),
             const SizedBox(height: Insets.xxl),
-            const Text(
-              "Mood Overview",
-              style: TextStyle(
-                fontSize: FontSizes.lg,
-                fontWeight: FontWeights.semibold,
-              ),
+            RecentJournalSection(
+              moods: _moods,
+              journalTitles: journalTitles,
+              onSeeAll: (dt) => widget.onNavigateToJournal?.call(dt),
+              relativeDate: relativeDate,
             ),
-            const SizedBox(height: Insets.base),
-            TransparentCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "This Week",
-                    style: TextStyle(
-                      fontSize: FontSizes.md,
-                      fontWeight: FontWeights.semibold,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: Insets.lg),
-                  WeekMoodRow(
-                    weekMoods: weekMoods,
-                    moodColor: _moodColor,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: Insets.base),
-            StreakCard(streak: streak),
             const SizedBox(height: Insets.xxl),
-            SectionHeader(title: "Recent Journal"),
-            const SizedBox(height: Insets.base),
-            ...List.generate(3, (i) {
-              final entry = i < _moods.length ? _moods[i] : null;
-              return JournalCard(
-                title: _journalTitles[i],
-                subtitle: entry != null
-                    ? _relativeDate(entry.date)
-                    : "No entry yet",
-                moodIndex: entry?.mood ?? 4,
-              );
-            }),
-            const SizedBox(height: Insets.xxl),
-            const Text(
-              "Tips for you",
-              style: TextStyle(
-                fontSize: FontSizes.title,
-                fontWeight: FontWeights.bold,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: Insets.xs),
-            Text(
-              "Daily inspiration for a better you",
-              style: TextStyle(
-                fontSize: FontSizes.md,
-                color: Colors.grey.shade500,
-              ),
-            ),
-            const SizedBox(height: Insets.lg),
-            const StatsCard(),
-            const SizedBox(height: Insets.xxl),
-            SectionHeader(title: "Your Moods"),
-            const SizedBox(height: Insets.base),
-            MoodCountGrid(
+            MoodsSection(
               counts: counts,
-              gridColors: _gridColors,
+              gridColors: gridColors,
             ),
             const SizedBox(height: Insets.xxl),
-            SectionHeader(title: "Reminders"),
-            const SizedBox(height: Insets.base),
-            Container(
-              width: double.infinity,
-              height: Sizes.reminderPlaceholderHeight,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(Radii.card),
-                border: Border.all(color: Colors.grey.shade300, width: 1),
-              ),
-            ),
-            const SizedBox(height: Insets.base),
-            const DashedBorderBox(
-              child: Center(
-                child: Text(
-                  "+ Add reminder",
-                  style: TextStyle(
-                    fontSize: FontSizes.lg,
-                    fontWeight: FontWeights.semibold,
-                    color: Colors.purple,
-                  ),
-                ),
-              ),
-            ),
+            const RemindersSection(),
             SizedBox(
-              height: MediaQuery.of(context).padding.bottom + Sizes.bottomPadding,
+              height:
+                  MediaQuery.of(context).padding.bottom + Sizes.bottomPadding,
             ),
           ],
         ),

@@ -14,6 +14,7 @@ class ThisMonthChart extends StatelessWidget {
 
     return Row(
       children: [
+        const SizedBox(width: Insets.md),
         SizedBox(
           width: Sizes.donutChartSize,
           height: Sizes.donutChartSize,
@@ -27,17 +28,29 @@ class ThisMonthChart extends StatelessWidget {
                   colors: moodLibrary.map((m) => m.bgColor).toList(),
                 ),
               ),
-              Text(
-                "$total",
-                style: const TextStyle(
-                  fontSize: FontSizes.title,
-                  fontWeight: FontWeights.bold,
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "$total",
+                    style: const TextStyle(
+                      fontSize: FontSizes.title,
+                      fontWeight: FontWeights.bold,
+                    ),
+                  ),
+                  Text(
+                    "Total",
+                    style: TextStyle(
+                      fontSize: FontSizes.sm,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
-        const SizedBox(width: Insets.xl),
+        const SizedBox(width: Insets.xxl),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +68,7 @@ class ThisMonthChart extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: Insets.sm),
+                    const SizedBox(width: Insets.base),
                     Expanded(
                       child: Text(
                         "${m.label}: $count",

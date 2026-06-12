@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/data.dart';
 import '../data/entry.dart';
+import '../data/goal_entry.dart';
 import '../services/mood_service_instance.dart';
 import '../widgets/shared_widgets.dart';
 import '../theme/app_constants.dart';
@@ -19,17 +20,26 @@ class MoodPage extends StatefulWidget {
 
 class _MoodPageState extends State<MoodPage> {
   List<MoodEntry> _moods = [];
+  List<GoalEntry> _goals = [];
 
   @override
   void initState() {
     super.initState();
     _loadMoods();
+    _loadGoals();
   }
 
   Future<void> _loadMoods() async {
     final moods = moodService.getAllMoods();
     setState(() {
       _moods = moods;
+    });
+  }
+
+  Future<void> _loadGoals() async {
+    final goals = moodService.getAllGoals();
+    setState(() {
+      _goals = goals;
     });
   }
 
@@ -117,6 +127,112 @@ class _MoodPageState extends State<MoodPage> {
     return moodLibrary[idx].label;
   }
 
+  Future<void> _onMoodSaved(int moodIndex) async {
+    final today = DateTime.now();
+    final todayNorm = DateTime(today.year, today.month, today.day);
+
+    for (final goal in _goals) {
+      if (goal.moodTarget != moodIndex) continue;
+      final alreadyCompleted = goal.completedDates.any(
+        (d) =>
+            d.year == todayNorm.year &&
+            d.month == todayNorm.month &&
+            d.day == todayNorm.day,
+      );
+      if (alreadyCompleted) continue;
+      final updated = GoalEntry(
+        name: goal.name,
+        targetPerWeek: goal.targetPerWeek,
+        createdAt: goal.createdAt,
+        moodTarget: goal.moodTarget,
+        completedDates: [...goal.completedDates, todayNorm],
+      );
+      await moodService.saveGoal(updated);
+    }
+    _loadMoods();
+    _loadGoals();
+  }
+
+  static const List<Map<String, dynamic>> _goalOptions = [
+    {'name': 'Be Happy', 'moodTarget': 4, 'icon': Icons.emoji_emotions},
+    {'name': 'Feel Loved', 'moodTarget': 5, 'icon': Icons.favorite},
+    {'name': 'Stay Calm', 'moodTarget': 1, 'icon': Icons.self_improvement},
+    {'name': 'Find Peace', 'moodTarget': 1, 'icon': Icons.spa},
+    {'name': 'Spread Joy', 'moodTarget': 4, 'icon': Icons.waving_hand},
+    {'name': 'Embrace Love', 'moodTarget': 5, 'icon': Icons.favorite_border},
+  ];
+
+  Future<void> _showAddGoalDialog() async {
+    int targetCount = 5;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              title: const Text('New Goal'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ..._goalOptions.map((opt) => ListTile(
+                        leading: Icon(opt['icon'] as IconData,
+                            color: Colors.purple),
+                        title: Text(opt['name'] as String),
+                        onTap: () async {
+                          final goal = GoalEntry(
+                            name: opt['name'] as String,
+                            targetPerWeek: targetCount,
+                            createdAt: DateTime.now(),
+                            moodTarget: opt['moodTarget'] as int,
+                          );
+                          await moodService.saveGoal(goal);
+                          _loadGoals();
+                          if (!ctx.mounted) return;
+                          Navigator.of(ctx).pop();
+                        },
+                      )),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Times per week: '),
+                      IconButton(
+                        icon: const Icon(Icons.remove_circle_outline),
+                        onPressed: targetCount > 1
+                            ? () => setDialogState(() => targetCount--)
+                            : null,
+                      ),
+                      Text(
+                        '$targetCount',
+                        style: const TextStyle(
+                          fontSize: FontSizes.xl,
+                          fontWeight: FontWeights.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add_circle_outline),
+                        onPressed: targetCount < 14
+                            ? () => setDialogState(() => targetCount++)
+                            : null,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Cancel'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final weekMoods = _thisWeekMoods();
@@ -147,7 +263,7 @@ class _MoodPageState extends State<MoodPage> {
             const SizedBox(height: Insets.xl),
             const MoodRow(),
             const SizedBox(height: Insets.xl),
-            const MoodPicker(),
+            MoodPicker(onMoodSaved: _onMoodSaved),
             const SizedBox(height: Insets.xxl),
             const Text(
               "Mood Overview",
@@ -230,20 +346,25 @@ class _MoodPageState extends State<MoodPage> {
               ),
             ),
             const SizedBox(height: Insets.base),
-            const GoalCard(
-              name: "Stay Positive",
-              current: 3,
-              total: 7,
-            ),
+            if (_goals.isNotEmpty)
+              ..._goals.map((goal) => Padding(
+                    padding: const EdgeInsets.only(bottom: Insets.base),
+                    child: GoalCard(goal: goal),
+                  )),
+            if (_goals.isEmpty)
+              const SizedBox.shrink(),
             const SizedBox(height: Insets.base),
-            const DashedBorderBox(
-              child: Center(
-                child: Text(
-                  "+ Add New Goal",
-                  style: TextStyle(
-                    fontSize: FontSizes.lg,
-                    fontWeight: FontWeights.semibold,
-                    color: Colors.purple,
+            GestureDetector(
+              onTap: _showAddGoalDialog,
+              child: const DashedBorderBox(
+                child: Center(
+                  child: Text(
+                    "+ Add New Goal",
+                    style: TextStyle(
+                      fontSize: FontSizes.lg,
+                      fontWeight: FontWeights.semibold,
+                      color: Colors.purple,
+                    ),
                   ),
                 ),
               ),

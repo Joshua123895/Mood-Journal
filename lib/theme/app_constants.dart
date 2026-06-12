@@ -71,7 +71,7 @@ class Sizes {
   static const double reminderPlaceholderHeight = 80;
   static const double moodRowHeight = 70;
   static const double dateStripHeight = 72;
-  static const double donutChartSize = 120;
+  static const double donutChartSize = 100;
   static const double legendDot = 8;
   static const double bottomPadding = 100;
 }

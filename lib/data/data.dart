@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'entry.dart';
+import 'reminder_entry.dart';
+import 'goal_entry.dart';
 
 class MoodFaceData {
   final String label;
@@ -111,12 +113,20 @@ const List<MoodFaceData> moodLibrary = [
 
 class MoodService {
   static const String _boxName = 'moods';
+  static const String _reminderBoxName = 'reminders';
+  static const String _goalBoxName = 'goals';
   late Box<MoodEntry> _box;
+  late Box<ReminderEntry> _reminderBox;
+  late Box<GoalEntry> _goalBox;
 
   Future<void> init() async {
     await Hive.initFlutter();
     Hive.registerAdapter(MoodEntryAdapter());
+    Hive.registerAdapter(ReminderEntryAdapter());
+    Hive.registerAdapter(GoalEntryAdapter());
     _box = await Hive.openBox<MoodEntry>(_boxName);
+    _reminderBox = await Hive.openBox<ReminderEntry>(_reminderBoxName);
+    _goalBox = await Hive.openBox<GoalEntry>(_goalBoxName);
   }
 
   // Add or update mood for a specific day
@@ -153,5 +163,49 @@ class MoodService {
   String _dateKey(DateTime date) {
     final normalized = DateTime(date.year, date.month, date.day);
     return normalized.toIso8601String();
+  }
+
+  // ---- Reminders ----
+  List<ReminderEntry> getAllReminders() {
+    return _reminderBox.values.toList();
+  }
+
+  Future<void> saveReminder(ReminderEntry entry) async {
+    await _reminderBox.add(entry);
+  }
+
+  Future<void> deleteReminder(ReminderEntry entry) async {
+    await entry.delete();
+  }
+
+  // ---- Goals ----
+  List<GoalEntry> getAllGoals() {
+    return _goalBox.values.toList();
+  }
+
+  Future<void> saveGoal(GoalEntry entry) async {
+    await _goalBox.put(entry.name, entry);
+  }
+
+  Future<void> deleteGoal(GoalEntry entry) async {
+    await entry.delete();
+  }
+
+  Future<void> clearGoals() async {
+    await _goalBox.clear();
+  }
+
+  Future<void> clearAll() async {
+    await _box.clear();
+    await _reminderBox.clear();
+    await _goalBox.clear();
+  }
+
+  int thisWeekMoodCount() {
+    final now = DateTime.now();
+    final startOfWeek = DateTime(now.year, now.month, now.day - now.weekday + 1);
+    return _box.values.where((m) =>
+        m.date.isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
+        m.date.isBefore(now.add(const Duration(days: 1)))).length;
   }
 }

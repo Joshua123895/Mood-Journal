@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../data/data.dart';
+import '../../data/entry.dart';
+import '../../services/mood_service_instance.dart';
 import '../../theme/app_constants.dart';
 import '../face.dart';
 
 class MoodPicker extends StatefulWidget {
-  const MoodPicker({super.key});
+  final ValueChanged<int>? onMoodSaved;
+
+  const MoodPicker({super.key, this.onMoodSaved});
 
   @override
   State<MoodPicker> createState() => _MoodPickerState();
@@ -12,7 +16,7 @@ class MoodPicker extends StatefulWidget {
 
 class _MoodPickerState extends State<MoodPicker>
     with SingleTickerProviderStateMixin {
-  double _moodIndex = (moodLibrary.length / 2).floorToDouble();
+  double _moodIndex = 4;
   final TextEditingController _noteController = TextEditingController();
 
   late AnimationController _motionController;
@@ -61,6 +65,29 @@ class _MoodPickerState extends State<MoodPicker>
       (hsl.lightness - 0.10).clamp(0.0, 1.0),
     );
     return adjusted.toColor();
+  }
+
+  Future<void> _saveMood() async {
+    final roundedIndex = _moodIndex.round();
+    final text = _noteController.text;
+    final entry = MoodEntry(
+      date: DateTime.now(),
+      mood: roundedIndex,
+      note: text.isNotEmpty ? text : null,
+    );
+    await moodService.saveMood(entry);
+    if (!mounted) return;
+    widget.onMoodSaved?.call(roundedIndex);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Mood saved!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+    setState(() {
+      _moodIndex = (moodLibrary.length / 2).floorToDouble();
+      _noteController.clear();
+    });
   }
 
   void _animateTo(double newTarget) {
@@ -192,9 +219,12 @@ class _MoodPickerState extends State<MoodPicker>
               color: AppColors.darkButton,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.arrow_forward,
-              color: Colors.white,
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_forward,
+                color: Colors.white,
+              ),
+              onPressed: _saveMood,
             ),
           ),
         ],

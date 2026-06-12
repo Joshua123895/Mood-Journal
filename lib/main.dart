@@ -5,8 +5,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'mood/mood.dart' show MoodPage;
 import 'home/home.dart' show HomePage;
 import 'journal/journal.dart' show JournalPage;
+import 'settings/settings_page.dart';
 import 'services/mood_service_instance.dart';
+import 'services/notification_service.dart';
 import 'theme/app_constants.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -18,6 +22,7 @@ void main() async {
   ]);
 
   await moodService.init();
+  await NotificationService().init();
 
   runApp(const MyApp());
 }
@@ -45,6 +50,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
+  final ValueNotifier<DateTime?> _journalTargetDate = ValueNotifier(null);
   final List<String> _navIcons = [
     "assets/icons/sun.svg",
     "assets/icons/journal.svg",
@@ -65,6 +71,11 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
   }
 
+  void _navigateToJournal(DateTime date) {
+    _journalTargetDate.value = date;
+    _onNavTapped(1);
+  }
+
   void _onNavTapped(int index) {
     _pageController.animateToPage(
       index,
@@ -73,23 +84,66 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  void _openSettings() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const SettingsPage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
       // ===== MIDDLE CONTENT =====
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-
+      body: Stack(
         children: [
-          HomePage(),
-          JournalPage(),
-          MoodPage(),
+          PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+
+            children: [
+              HomePage(onNavigateToJournal: _navigateToJournal),
+              JournalPage(journalTargetDate: _journalTargetDate),
+              MoodPage(),
+            ],
+          ),
+          Positioned(
+            top: MediaQuery.of(context).padding.top + Insets.xl,
+            right: Insets.xl,
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: _openSettings,
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.grey.shade700,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
 

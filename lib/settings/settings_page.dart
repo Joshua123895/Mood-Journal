@@ -187,7 +187,7 @@ class _SettingsPageState extends State<SettingsPage> {
 									],
 								),
 							),
-						),
+					),
 					),
 
 					const SizedBox(height: Insets.xxl),

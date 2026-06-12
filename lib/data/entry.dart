@@ -14,9 +14,13 @@ class MoodEntry extends HiveObject {
   @HiveField(2)
   final String? note;
 
+  @HiveField(3)
+  final String? tag;
+
   MoodEntry({
     required this.date,
     required this.mood,
     this.note,
+    this.tag,
   });
 }

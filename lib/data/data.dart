@@ -127,6 +127,13 @@ class MoodService {
     _box = await Hive.openBox<MoodEntry>(_boxName);
     _reminderBox = await Hive.openBox<ReminderEntry>(_reminderBoxName);
     _goalBox = await Hive.openBox<GoalEntry>(_goalBoxName);
+
+    if (_reminderBox.isEmpty) {
+      await _reminderBox.addAll([
+        ReminderEntry(label: 'Journal reminder', hour: 21, minute: 0, repeat: 'daily'),
+        ReminderEntry(label: 'Mood check-in', hour: 15, minute: 0, repeat: 'daily'),
+      ]);
+    }
   }
 
   // Add or update mood for a specific day
